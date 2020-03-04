@@ -18,13 +18,13 @@ class Graphic:
 
     def draw_array(self, array, color):
         for i in range(len(array)):
-            rect = ((i*2, 10),(1, array[i]))
+            rect = ((i*2, 10),(1, array[i]*2))
             pygame.draw.rect(self.dis, color, rect)
 
-    def run(self, color):
-        while True:
+    def run(self, color, array, run):
+        while run:
             self.dis.fill(color)
-            self.draw_array([1, 2, 3, 4, 5, 6], self.red)
+            self.draw_array(array, self.red)
             pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or \
@@ -33,7 +33,8 @@ class Graphic:
                     quit()
 
 
-a = Graphic(320, 320)
-a.init_display()
-a.run(a.white)
+if __name__ == "__main__":
+    a = Graphic(320, 320)
+    a.init_display()
+    a.run(a.white, [1, 2, 3, 4])
 

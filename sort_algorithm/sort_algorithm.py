@@ -1,13 +1,15 @@
 import random
 import timeit
+from graphic import Graphic
 
 
-class SortAlgorithm:
+class SortAlgorithm(Graphic):
     def __init__(self, n=None, range=100):
         self.n = n
         self.range = range
         self.array = []
-        self.time = 0
+        Graphic.__init__(self,320,320)
+        Graphic.init_display(self)
 
     def get_timer(self):
         return timeit.default_timer()
@@ -32,6 +34,7 @@ class SortAlgorithm:
                 tmp = self.array[i]
                 self.array[i] = self.array[m]
                 self.array[m] = tmp
+            Graphic.run(self, self.white, self.array, False)
         stop = self.get_timer()
         # print(stop)
         self.time = stop - start
@@ -74,12 +77,13 @@ class SortAlgorithm:
         return self.array
 
     
-print(timeit.default_timer())
-sort_al = SortAlgorithm(4, 10)
+# print(timeit.default_timer())
+sort_al = SortAlgorithm(10000, 600)
 ar = sort_al.random_array()
-print(timeit.default_timer())
+# print(timeit.default_timer())
 print(ar)
 print(sort_al.selection_sort())
-print(sort_al.time)
-print(sort_al.bubble_sort())
-print(sort_al.time)
+sort_al.run(sort_al.white,sort_al.array, True)
+# print(sort_al.time)
+# print(sort_al.bubble_sort())
+# print(sort_al.time)
