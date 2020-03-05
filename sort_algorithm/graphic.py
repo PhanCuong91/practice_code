@@ -12,6 +12,7 @@ class Graphic:
         self.w = w
         self.h = h
         self.dis = None
+        self.con = False
 
     def init_display(self):
         self.dis = pygame.display.set_mode((self.w, self.h))
@@ -21,11 +22,15 @@ class Graphic:
             rect = ((i*2, 10),(1, array[i]*4))
             pygame.draw.rect(self.dis, color, rect)
 
-    def run(self, color, array):
-        while True:
+    def run(self, color, array, con):
+        while not con:
             self.dis.fill(color)
             self.draw_array(array, self.red)
             pygame.display.update()
+        print("done")
+
+    def close(self):
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or \
                    (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):

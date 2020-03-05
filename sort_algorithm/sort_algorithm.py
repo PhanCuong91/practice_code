@@ -8,6 +8,7 @@ class SortAlgorithm:
         self.range = range
         self.array = []
         self.time = 0
+        self.fin = False
 
     def get_timer(self):
         return timeit.default_timer()
@@ -20,11 +21,12 @@ class SortAlgorithm:
         return self.array
 
     def selection_sort(self):
+        self.fin = False
         n = len(self.array)
         start = self.get_timer()
         # print(start)
         for i in range(n):
-            sleep(5)
+            sleep(0.5)
             m = i
             for j in range(i+1, n):
                 if self.array[m] > self.array[j]:
@@ -36,6 +38,7 @@ class SortAlgorithm:
         stop = self.get_timer()
         # print(stop)
         self.time = stop - start
+        self.fin = True
         return self.array
 
     def bubble_sort(self):
@@ -84,10 +87,14 @@ from graphic import Graphic
 gra = Graphic(320, 320)
 gra.init_display()
 t1 = Thread(target=sort_al.selection_sort)
-t2 = Thread(target=gra.run, args=(gra.white, sort_al.array))
-t2.start()
+t2 = Thread(target=gra.run, args=(gra.white, sort_al.array, sort_al.fin))
 t1.start()
+t2.start()
+t2.join()
 t1.join()
+print('DOne')
+gra.close()
+
 # print(timeit.default_timer())
 # print(ar)
 # print(sort_al.selection_sort())
