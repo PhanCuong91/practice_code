@@ -1,7 +1,5 @@
 import pygame
 
-global matrix
-
 
 class Graphic:
 
@@ -27,6 +25,12 @@ class Graphic:
             self.dis.fill(color)
             self.draw_array(array, self.red)
             pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or \
+                   (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                    pygame.quit()
+                    quit()
+        self.close()
         print("done")
 
     def close(self):
@@ -38,7 +42,7 @@ class Graphic:
                     quit()
 
 
-a = Graphic(320, 320)
-a.init_display()
-#a.run(a.white)
+gra = Graphic(320, 320)
+gra.init_display()
+gra.run(gra.white,[1,10,30],False)
 
