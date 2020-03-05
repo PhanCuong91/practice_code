@@ -1,7 +1,7 @@
 import random
 import timeit
-
-
+from threading import Thread
+from time import sleep
 class SortAlgorithm:
     def __init__(self, n=None, range=100):
         self.n = n
@@ -24,6 +24,7 @@ class SortAlgorithm:
         start = self.get_timer()
         # print(start)
         for i in range(n):
+            sleep(5)
             m = i
             for j in range(i+1, n):
                 if self.array[m] > self.array[j]:
@@ -75,11 +76,21 @@ class SortAlgorithm:
 
     
 print(timeit.default_timer())
-sort_al = SortAlgorithm(4, 10)
+sort_al = SortAlgorithm(10, 80)
 ar = sort_al.random_array()
-print(timeit.default_timer())
-print(ar)
-print(sort_al.selection_sort())
-print(sort_al.time)
-print(sort_al.bubble_sort())
-print(sort_al.time)
+
+from graphic import Graphic
+
+gra = Graphic(320, 320)
+gra.init_display()
+t1 = Thread(target=sort_al.selection_sort)
+t2 = Thread(target=gra.run, args=(gra.white, sort_al.array))
+t2.start()
+t1.start()
+t1.join()
+# print(timeit.default_timer())
+# print(ar)
+# print(sort_al.selection_sort())
+# print(sort_al.time)
+# print(sort_al.bubble_sort())
+# print(sort_al.time)
