@@ -8,7 +8,7 @@ import pygame
 class SortAlgorithm:
     def __init__(self, n=0, rag=100):
         """
-        :param n: number of array
+        :param self.n: number of array
         :param rag: range of array element
         """
         self.n = n
@@ -41,13 +41,13 @@ class SortAlgorithm:
         do it until array was sorted
         :return: sorted array
         """
-        n = len(self.array)
+        self.n = len(self.array)
         start = self.get_timer()
-        for i in range(n):
+        for i in range(self.n):
             sleep(0.1)
             # get the current index,
             cur_ind = i
-            for j in range(i+1, n):
+            for j in range(i+1, self.n):
                 # find the minimum value in an array, from current index
                 if self.array[cur_ind] > self.array[j]:
                     cur_ind = j
@@ -69,7 +69,7 @@ class SortAlgorithm:
         Note: this algorithm need run step 1 one more time to confirm that the array were sorted
         :return: sorted array
         """
-        n = len(self.array)
+        self.n = len(self.array)
         # this is a variable which confirm the array were sorted, because of no swap
         con = 1
         start = self.get_timer()
@@ -78,7 +78,7 @@ class SortAlgorithm:
             sleep(1)
             con = 0
             # step 1: compare whole elements in array
-            for i in range(n-1):
+            for i in range(self.n-1):
                 # swap if the current element is more than next one
                 if self.array[i] > self.array[i+1]:
                     tmp = self.array[i]
@@ -99,14 +99,14 @@ class SortAlgorithm:
         Note: this algorithm need run step 1 one more time to confirm that the array were sorted
         :return: sorted array
         """
-        n = len(self.array)
+        self.n = len(self.array)
         # this is a variable which confirm the array were sorted, because of no swap
         con = 0
         start = self.get_timer()
         # print(start)
         sleep(0.5)
         # step 1: compare whole elements in array
-        for i in range(n-1):
+        for i in range(self.n-1):
             sleep(0.1)
             # swap if the current element is more than next one
             if self.array[i] > self.array[i+1]:
@@ -121,6 +121,26 @@ class SortAlgorithm:
         stop = self.get_timer()
         # print(stop)
         self.time = stop - start
+        return self.array
+
+    def insert_sort(self):
+        """
+        reference: https://www.geeksforgeeks.org/insertion-sort/
+        first element is a sorted array. then get and sort next element in the exiting sorted array.
+        for example: sorted array: array[0]. then get array[1] and sort. after that, sorted array is array[0,1]
+        :return:
+        """
+        for i in range(1, self.n):
+            # sort the next element to the exiting sorted array
+            for j in range(i):
+                sleep(0.001)
+                # sort element: get next element and find suitable index in exiting sorted array
+                # then delete next element  and insert it to the above index
+                if self.array[i] < self.array[j]:
+                    tmp = self.array[i]
+                    self.array.pop(i)
+                    self.array.insert(j, tmp)
+                    break
         return self.array
 
 
@@ -155,14 +175,18 @@ class Graphic:
                     quit()
 
 
-sort_al = SortAlgorithm(40, 80)
+sort_al = SortAlgorithm(800, 80)
 ar = sort_al.random_array()
 print(ar)
-# print(sort_al.bubble_sort())
+# af = sort_al.insert_sort()
+# print(af)
+# print(sort_al.array)
+
 gra = Graphic(320, 320)
 gra.init_display()
-t1 = Thread(target=sort_al.recursive_bubble_sort)
+t1 = Thread(target=sort_al.insert_sort)
 t1.start()
+print(sort_al.array)
 gra.run(gra.white, sort_al.array, True)
 t1.join()
 print('DOne')
