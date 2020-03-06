@@ -90,7 +90,7 @@ class SortAlgorithm:
         self.time = stop - start
         return self.array
 
-    def recursive_bubble_sort(self):
+    def recursive_bubble_sort(self, n):
         """
         reference: https://www.geeksforgeeks.org/recursive-bubble-sort/
         step 1: compare first two element, and swap if second is less then first
@@ -99,31 +99,23 @@ class SortAlgorithm:
         Note: this algorithm need run step 1 one more time to confirm that the array were sorted
         :return: sorted array
         """
-        self.n = len(self.array)
-        # this is a variable which confirm the array were sorted, because of no swap
-        con = 0
+
         start = self.get_timer()
-        # print(start)
-        sleep(0.5)
-        # step 1: compare whole elements in array
-        for i in range(self.n-1):
-            sleep(0.1)
+        if n == 1:
+            return self.array
+        for i in range(n-1):
             # swap if the current element is more than next one
+            # next one will be current
             if self.array[i] > self.array[i+1]:
                 tmp = self.array[i]
                 self.array[i] = self.array[i+1]
                 self.array[i+1] = tmp
-                # this variable is set to 1 , if swap element
-                con = 1
-        # if the array was not sorted, then call recursive_bubble_sort
-        if con == 1:
-            self.recursive_bubble_sort()
+        # after swapping, the largest element shall be at the end of array
+        self.recursive_bubble_sort(n-1)
         stop = self.get_timer()
-        # print(stop)
         self.time = stop - start
-        return self.array
 
-    def insert_sort(self):
+    def insertion_sort(self):
         """
         reference: https://www.geeksforgeeks.org/insertion-sort/
         first element is a sorted array. then get and sort next element in the exiting sorted array.
@@ -142,6 +134,24 @@ class SortAlgorithm:
                     self.array.insert(j, tmp)
                     break
         return self.array
+
+    def recursive_insertion_sort(self, n):
+        """
+        reference: https://www.geeksforgeeks.org/insertion-sort/
+        first element is a sorted array. then get and sort next element in the exiting sorted array.
+        for example: sorted array: array[0]. then get array[1] and sort. after that, sorted array is array[0,1]
+        :return:
+        """
+        tmp = self.n - n + 1
+        if tmp == self.n:
+            return self.array
+        for i in range(tmp):
+            if self.array[i] > self.array[tmp]:
+                temp = self.array[tmp]
+                self.array.pop(tmp)
+                self.array.insert(i, temp)
+                break
+        self.recursive_insertion_sort(n-1)
 
 
 class Graphic:
@@ -175,18 +185,18 @@ class Graphic:
                     quit()
 
 
-sort_al = SortAlgorithm(800, 80)
+sort_al = SortAlgorithm(40, 80)
 ar = sort_al.random_array()
 print(ar)
-# af = sort_al.insert_sort()
-# print(af)
-# print(sort_al.array)
-
-gra = Graphic(320, 320)
-gra.init_display()
-t1 = Thread(target=sort_al.insert_sort)
-t1.start()
+af = sort_al.recursive_insertion_sort(sort_al.n)
+print(af)
 print(sort_al.array)
-gra.run(gra.white, sort_al.array, True)
-t1.join()
+
+# gra = Graphic(320, 320)
+# gra.init_display()
+# t1 = Thread(target=sort_al.recursive_insertion_sort)
+# t1.start()
+# print(sort_al.array)
+# gra.run(gra.white, sort_al.array, True)
+# t1.join()
 print('DOne')
