@@ -35,61 +35,89 @@ class SortAlgorithm:
 
     def selection_sort(self):
         """
+        reference: https://www.geeksforgeeks.org/selection-sort/
+        find the least minimum value and swap it with the first index of array
+        find the next least minimum value and swap it with second index of array.
+        do it until array was sorted
         :return: sorted array
         """
         n = len(self.array)
         start = self.get_timer()
-        """
-        compare 
-        """
         for i in range(n):
             sleep(0.1)
-            m = i
-
+            # get the current index,
+            cur_ind = i
             for j in range(i+1, n):
-                # find the minimum value in an array
-                if self.array[m] > self.array[j]:
-                    m = j
-            # if index of the minimum value
-            if m != i:
+                # find the minimum value in an array, from current index
+                if self.array[cur_ind] > self.array[j]:
+                    cur_ind = j
+            # if index of the minimum value is current index, then swap it
+            if cur_ind != i:
                 tmp = self.array[i]
-                self.array[i] = self.array[m]
-                self.array[m] = tmp
+                self.array[i] = self.array[cur_ind]
+                self.array[cur_ind] = tmp
         stop = self.get_timer()
         self.time = stop - start
         return self.array
 
     def bubble_sort(self):
+        """
+        reference: https://www.geeksforgeeks.org/bubble-sort/
+        step 1: compare first two element, and swap if second is less then first
+        do it until comparing whole array.
+        step 2: repeat step 1 with compared array which was in step 1
+        Note: this algorithm need run step 1 one more time to confirm that the array were sorted
+        :return: sorted array
+        """
         n = len(self.array)
-        con = 0
+        # this is a variable which confirm the array were sorted, because of no swap
+        con = 1
         start = self.get_timer()
         # print(start)
-        while con != 1:
+        while con == 1:
+            sleep(1)
             con = 0
+            # step 1: compare whole elements in array
             for i in range(n-1):
+                # swap if the current element is more than next one
                 if self.array[i] > self.array[i+1]:
                     tmp = self.array[i]
                     self.array[i] = self.array[i+1]
                     self.array[i+1] = tmp
+                    # this variable is set to 1 , if swap element
                     con = 1
         stop = self.get_timer()
-
         self.time = stop - start
         return self.array
 
     def recursive_bubble_sort(self):
+        """
+        reference: https://www.geeksforgeeks.org/recursive-bubble-sort/
+        step 1: compare first two element, and swap if second is less then first
+        do it until comparing whole array.
+        step 2: repeat step 1 with compared array which was in step 1
+        Note: this algorithm need run step 1 one more time to confirm that the array were sorted
+        :return: sorted array
+        """
         n = len(self.array)
+        # this is a variable which confirm the array were sorted, because of no swap
         con = 0
         start = self.get_timer()
         # print(start)
-        while con != 1:
-            con = 0
-            for i in range(n-1):
-                if self.array[i] > self.array[i+1]:
-                    tmp = self.array[i]
-                    self.array[i] = self.array[i+1]
-                    self.array[i+1] = tmp
-                    con = 1
+        sleep(0.5)
+        # step 1: compare whole elements in array
+        for i in range(n-1):
+            sleep(0.1)
+            # swap if the current element is more than next one
+            if self.array[i] > self.array[i+1]:
+                tmp = self.array[i]
+                self.array[i] = self.array[i+1]
+                self.array[i+1] = tmp
+                # this variable is set to 1 , if swap element
+                con = 1
+        # if the array was not sorted, then call recursive_bubble_sort
+        if con == 1:
+            self.recursive_bubble_sort()
         stop = self.get_timer()
         # print(stop)
         self.time = stop - start
@@ -127,13 +155,13 @@ class Graphic:
                     quit()
 
 
-sort_al = SortAlgorithm(100, 80)
+sort_al = SortAlgorithm(40, 80)
 ar = sort_al.random_array()
 print(ar)
 # print(sort_al.bubble_sort())
 gra = Graphic(320, 320)
 gra.init_display()
-t1 = Thread(target=sort_al.bubble_sort)
+t1 = Thread(target=sort_al.recursive_bubble_sort)
 t1.start()
 gra.run(gra.white, sort_al.array, True)
 t1.join()
