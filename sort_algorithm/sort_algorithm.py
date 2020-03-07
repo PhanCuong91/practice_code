@@ -122,10 +122,11 @@ class SortAlgorithm:
         for example: sorted array: array[0]. then get array[1] and sort. after that, sorted array is array[0,1]
         :return:
         """
+        start = self.get_timer()
         for i in range(1, self.n):
             # sort the next element to the exiting sorted array
             for j in range(i):
-                sleep(0.001)
+                # sleep(0.001)
                 # sort element: get next element and find suitable index in exiting sorted array
                 # then delete next element  and insert it to the above index
                 if self.array[i] < self.array[j]:
@@ -133,11 +134,13 @@ class SortAlgorithm:
                     self.array.pop(i)
                     self.array.insert(j, tmp)
                     break
+        stop = self.get_timer()
+        self.time = stop - start
         return self.array
 
     def recursive_insertion_sort(self, n):
         """
-        reference: https://www.geeksforgeeks.org/insertion-sort/
+        reference: https://www.geeksforgeeks.org/recursive-insertion-sort/
         first element is a sorted array. then get and sort next element in the exiting sorted array.
         for example: sorted array: array[0]. then get array[1] and sort. after that, sorted array is array[0,1]
         :return:
@@ -152,6 +155,36 @@ class SortAlgorithm:
                 self.array.insert(i, temp)
                 break
         self.recursive_insertion_sort(n-1)
+
+    def merge_sort(self, l, r):
+        """
+
+        :return:
+        """
+        # split array
+        start = self.get_timer()
+        if r - l > 1:
+            m = int((r - l)/2)
+            self.merge_sort(l, l+m)
+            self.merge_sort(l+m, r)
+            i = l
+            j = l + m
+            arr_tmp = self.array[l:r]
+            move = 0
+            while i < l+m and j < r:
+                # sleep(0.1)
+                if self.array[i] > self.array[j]:
+                    tmp = self.array[j]
+                    arr_tmp.pop(j-l)
+                    arr_tmp.insert(i-l+move, tmp)
+                    move += 1
+                    j += 1
+                else:
+                    i += 1
+            self.array[l:r] = arr_tmp
+            # sleep(0.2)
+        stop = self.get_timer()
+        self.time = stop - start
 
 
 class Graphic:
@@ -185,18 +218,26 @@ class Graphic:
                     quit()
 
 
-sort_al = SortAlgorithm(40, 80)
+sort_al = SortAlgorithm(40000, 80)
+sort_al1 = SortAlgorithm(40000, 80)
 ar = sort_al.random_array()
+sort_al1.array = ar
+# sort_al1.array = [77, 0, 43, 1]
 print(ar)
-af = sort_al.recursive_insertion_sort(sort_al.n)
+af = sort_al.insertion_sort()
 print(af)
-print(sort_al.array)
+print(sort_al.time)
+sort_al1.merge_sort(0, 40000)
+print(sort_al1.array)
+print(sort_al1.time)
+# print(sort_al.array)
+# print(sort_al1.array)
 
 # gra = Graphic(320, 320)
 # gra.init_display()
-# t1 = Thread(target=sort_al.recursive_insertion_sort)
+# t1 = Thread(target=sort_al1.merge_sort, args=(0, 150,))
 # t1.start()
 # print(sort_al.array)
-# gra.run(gra.white, sort_al.array, True)
+# gra.run(gra.white, sort_al1.array, True)
 # t1.join()
 print('DOne')
