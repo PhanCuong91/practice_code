@@ -15,6 +15,8 @@ class SortAlgorithm:
         self.range = rag
         self.array = []
         self.time = 0
+        self.small = 0
+        self.big = 0
 
     def get_timer(self):
         """
@@ -165,26 +167,60 @@ class SortAlgorithm:
         start = self.get_timer()
         if r - l > 1:
             m = int((r - l)/2)
+            # sort first half of array
             self.merge_sort(l, l+m)
+            # sort second half of array
             self.merge_sort(l+m, r)
             i = l
             j = l + m
+            # save first or second half  to temporary array
             arr_tmp = self.array[l:r]
             move = 0
+            # sort the half array
+            # i is index of [41, 47], j  [1, 45]
             while i < l+m and j < r:
                 # sleep(0.1)
                 if self.array[i] > self.array[j]:
-                    tmp = self.array[j]
                     arr_tmp.pop(j-l)
-                    arr_tmp.insert(i-l+move, tmp)
+                    arr_tmp.insert(i-l+move, self.array[j])
                     move += 1
                     j += 1
                 else:
                     i += 1
+            # assign to array
             self.array[l:r] = arr_tmp
             # sleep(0.2)
         stop = self.get_timer()
         self.time = stop - start
+
+    def quick_sort(self, arr):
+        n = len(arr)
+        if len(arr) > 1:
+            pivot = arr[n-1]
+            # print('pivot %d n is %d' % (pivot, n-1))
+            small = []
+            big = []
+            for i in range(n-1):
+                if arr[i] <= pivot:
+                    small.append(arr[i])
+                else:
+                    big.append(arr[i])
+            if len(small) > 1:
+                # self.small += 1
+                # print("small: %d big  %d" % (self.small, self.big))
+                # print(small)
+                small = self.quick_sort(small)
+
+            small.append(pivot)
+            if len(big) > 1:
+                # self.big += 1
+                # print("big: %d, small %d" % (self.big, self.small))
+                # print(big)
+                big = self.quick_sort(big)
+            # sleep(0.1)
+            return small + big
+        else:
+            return []
 
 
 class Graphic:
@@ -218,26 +254,28 @@ class Graphic:
                     quit()
 
 
-sort_al = SortAlgorithm(40000, 80)
-sort_al1 = SortAlgorithm(40000, 80)
+sort_al = SortAlgorithm(4000, 100)
+sort_al1 = SortAlgorithm(4000, 100)
 ar = sort_al.random_array()
-sort_al1.array = ar
+sort_al1.array = sort_al1.random_array()
 # sort_al1.array = [77, 0, 43, 1]
-print(ar)
+# print(ar)
 af = sort_al.insertion_sort()
 print(af)
-print(sort_al.time)
-sort_al1.merge_sort(0, 40000)
 print(sort_al1.array)
-print(sort_al1.time)
+print(sort_al1.array.count(91))
+ar1 = sort_al1.quick_sort(sort_al1.array)
+print(ar1)
+print(ar1.count(91))
+# print(sort_al1.time)
 # print(sort_al.array)
 # print(sort_al1.array)
 
-# gra = Graphic(320, 320)
+# gra = Graphic(2500, 500)
 # gra.init_display()
-# t1 = Thread(target=sort_al1.merge_sort, args=(0, 150,))
+# t1 = Thread(target=sort_al1.quick_sort, args=(ar,))
 # t1.start()
-# print(sort_al.array)
+# print(sort_al1.array)
 # gra.run(gra.white, sort_al1.array, True)
 # t1.join()
 print('DOne')
