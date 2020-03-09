@@ -15,8 +15,7 @@ class SortAlgorithm:
         self.range = rag
         self.array = []
         self.time = 0
-        self.small = 0
-        self.big = 0
+        self.pivot = 0
 
     def get_timer(self):
         """
@@ -193,32 +192,58 @@ class SortAlgorithm:
         stop = self.get_timer()
         self.time = stop - start
 
-    def quick_sort(self, arr):
+    def quick_sort(self, arr, l, r):
         n = len(arr)
         if len(arr) > 1:
             pivot = arr[n-1]
             # print('pivot %d n is %d' % (pivot, n-1))
             small = []
+            n_small = 0
             big = []
+            n_big = 0
+            # print("function array")
+            # print(arr)
             for i in range(n-1):
                 if arr[i] <= pivot:
+                    n_small += 1
                     small.append(arr[i])
                 else:
+                    n_big += 1
                     big.append(arr[i])
+
+            # print("z is %d \n" % z)
+            # print(str(pivot) + '\n')
+
+            if len(small) != 0:
+                self.array[l: l+n_small] = small
+            self.array[l+n_small] = pivot
+            self.pivot = l+n_small
+            print('function %d' % self.pivot)
+            if len(big) != 0:
+                self.array[r-n_big: r] = big
+            sleep(0.5)
+            # print("main array")
+            # print(self.array)
             if len(small) > 1:
                 # self.small += 1
                 # print("small: %d big  %d" % (self.small, self.big))
                 # print(small)
-                small = self.quick_sort(small)
 
-            small.append(pivot)
+                # print("left is %d and right %d and n small = %d" % (l,r, n_small))
+                # print(small)
+                small = self.quick_sort(small, l, l+n_small)
+
             if len(big) > 1:
                 # self.big += 1
                 # print("big: %d, small %d" % (self.big, self.small))
                 # print(big)
-                big = self.quick_sort(big)
-            # sleep(0.1)
-            return small + big
+
+                # print("n big = %d and and left %d and right is %d" % (n_big,l, r))
+                # print(big)
+                big = self.quick_sort(big, r - n_big, r)
+            # sleep(0.2)
+
+            return arr
         else:
             return []
 
@@ -226,6 +251,7 @@ class SortAlgorithm:
 class Graphic:
     white = (255, 255, 255)
     red = (255, 0, 0)
+    blue = (0, 0, 255)
 
     def __init__(self, w, h):
         self.w = w
@@ -242,10 +268,16 @@ class Graphic:
             rect = ((i * 2, 10), (1, array[i] * 4))
             pygame.draw.rect(self.dis, color, rect)
 
-    def run(self, color, array, con):
-        while con:
+    def run(self, color, array, pivot):
+        tmp = 0
+        while True:
             self.dis.fill(color)
             self.draw_array(array, self.red)
+            if tmp != pivot:
+                print(pivot)
+            tmp = pivot
+            rect = ((pivot * 2, 10), (1, array[pivot] * 4))
+            pygame.draw.rect(self.dis, self.blue, rect)
             pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or \
@@ -254,28 +286,31 @@ class Graphic:
                     quit()
 
 
-sort_al = SortAlgorithm(4000, 100)
-sort_al1 = SortAlgorithm(4000, 100)
+sort_al = SortAlgorithm(100, 100)
+sort_al1 = SortAlgorithm(100, 100)
 ar = sort_al.random_array()
 sort_al1.array = sort_al1.random_array()
-# sort_al1.array = [77, 0, 43, 1]
+# sort_al1.array = [20, 13, 81, 71, 15, 15, 13, 88, 30, 92]
 # print(ar)
 af = sort_al.insertion_sort()
 print(af)
 print(sort_al1.array)
 print(sort_al1.array.count(91))
-ar1 = sort_al1.quick_sort(sort_al1.array)
-print(ar1)
-print(ar1.count(91))
+# ar1 = sort_al1.quick_sort(sort_al1.array)
+# print(ar1)
+# print(ar1.count(91))
 # print(sort_al1.time)
 # print(sort_al.array)
 # print(sort_al1.array)
 
-# gra = Graphic(2500, 500)
-# gra.init_display()
-# t1 = Thread(target=sort_al1.quick_sort, args=(ar,))
-# t1.start()
+gra = Graphic(500, 500)
+gra.init_display()
+t1 = Thread(target=sort_al1.quick_sort, args=(sort_al1.array, 0, 100))
+t1.start()
+gra.run(gra.white, sort_al1.array, sort_al1.pivot)
 # print(sort_al1.array)
-# gra.run(gra.white, sort_al1.array, True)
-# t1.join()
+t1.join()
+# print(sort_al1.array)
+
+
 print('DOne')
