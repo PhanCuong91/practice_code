@@ -135,6 +135,7 @@ class SortAlgorithm:
                     self.array.pop(i)
                     self.array.insert(j, tmp)
                     break
+            sleep(0.2)
         stop = self.get_timer()
         self.time = stop - start
         return self.array
@@ -188,7 +189,7 @@ class SortAlgorithm:
                     i += 1
             # assign to array
             self.array[l:r] = arr_tmp
-            # sleep(0.2)
+            sleep(0.2)
         stop = self.get_timer()
         self.time = stop - start
 
@@ -196,13 +197,14 @@ class SortAlgorithm:
         n = len(arr)
         if len(arr) > 1:
             pivot = arr[n-1]
-            # print('pivot %d n is %d' % (pivot, n-1))
             small = []
             n_small = 0
             big = []
             n_big = 0
             # print("function array")
             # print(arr)
+            self.pivot = n-1
+            sleep(2)
             for i in range(n-1):
                 if arr[i] <= pivot:
                     n_small += 1
@@ -210,40 +212,25 @@ class SortAlgorithm:
                 else:
                     n_big += 1
                     big.append(arr[i])
-
-            # print("z is %d \n" % z)
-            # print(str(pivot) + '\n')
-
+            # self.pivot = l + n_small
             if len(small) != 0:
                 self.array[l: l+n_small] = small
             self.array[l+n_small] = pivot
-            self.pivot = l+n_small
-            print('function %d' % self.pivot)
             if len(big) != 0:
                 self.array[r-n_big: r] = big
-            sleep(0.5)
-            # print("main array")
-            # print(self.array)
-            if len(small) > 1:
-                # self.small += 1
-                # print("small: %d big  %d" % (self.small, self.big))
-                # print(small)
 
+            print(self.array)
+            print('function %d' % self.pivot)
+            sleep(1)
+            if len(small) > 1:
                 # print("left is %d and right %d and n small = %d" % (l,r, n_small))
                 # print(small)
                 small = self.quick_sort(small, l, l+n_small)
-
             if len(big) > 1:
-                # self.big += 1
-                # print("big: %d, small %d" % (self.big, self.small))
-                # print(big)
-
                 # print("n big = %d and and left %d and right is %d" % (n_big,l, r))
                 # print(big)
-                big = self.quick_sort(big, r - n_big, r)
-            # sleep(0.2)
-
-            return arr
+                big = self.quick_sort(big, r-n_big, r)
+            return True
         else:
             return []
 
@@ -265,29 +252,32 @@ class Graphic:
 
     def draw_array(self, array, color):
         for i in range(len(array)):
-            rect = ((i * 2, 10), (1, array[i] * 4))
+            rect = ((i * 5, 10), (4, array[i] * 4))
             pygame.draw.rect(self.dis, color, rect)
 
-    def run(self, color, array, pivot):
-        tmp = 0
-        while True:
-            self.dis.fill(color)
-            self.draw_array(array, self.red)
-            if tmp != pivot:
-                print(pivot)
-            tmp = pivot
-            rect = ((pivot * 2, 10), (1, array[pivot] * 4))
-            pygame.draw.rect(self.dis, self.blue, rect)
-            pygame.display.update()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT or \
-                        (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                    pygame.quit()
-                    quit()
+    def run(self, color, pivot, array):
+        # tmp = 0
+        # arr = []
+        self.dis.fill(color)
+        self.draw_array(array, self.red)
+        # if tmp != pivot:
+        #     print(pivot)
+        # if array != arr:
+        #     print(array)
+        # arr = array
+        # tmp = pivot
+        rect = ((pivot * 5, 10), (4, array[pivot] * 4))
+        pygame.draw.rect(self.dis, self.blue, rect)
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or \
+                    (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                pygame.quit()
+                quit()
 
 
-sort_al = SortAlgorithm(100, 100)
-sort_al1 = SortAlgorithm(100, 100)
+sort_al = SortAlgorithm(40, 100)
+sort_al1 = SortAlgorithm(40, 100)
 ar = sort_al.random_array()
 sort_al1.array = sort_al1.random_array()
 # sort_al1.array = [20, 13, 81, 71, 15, 15, 13, 88, 30, 92]
@@ -299,15 +289,14 @@ print(sort_al1.array.count(91))
 # ar1 = sort_al1.quick_sort(sort_al1.array)
 # print(ar1)
 # print(ar1.count(91))
-# print(sort_al1.time)
-# print(sort_al.array)
-# print(sort_al1.array)
 
 gra = Graphic(500, 500)
 gra.init_display()
-t1 = Thread(target=sort_al1.quick_sort, args=(sort_al1.array, 0, 100))
+# t1 = Thread(target=sort_al1.merge_sort, args=(0, 40,))
+t1 = Thread(target=sort_al1.insertion_sort)
 t1.start()
-gra.run(gra.white, sort_al1.array, sort_al1.pivot)
+while True:
+    gra.run(gra.white, sort_al1.pivot, sort_al1.array)
 # print(sort_al1.array)
 t1.join()
 # print(sort_al1.array)
