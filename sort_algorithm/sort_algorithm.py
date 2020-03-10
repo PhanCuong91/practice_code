@@ -15,10 +15,17 @@ class SortAlgorithm:
         self.range = rag
         self.array = []
         self.time = 0
-        # quick has [pivot, [index of smaller element], [index of bigger element] ]
+        # quick has [pivot, left index of working array wrt main array, right index of working array wrt main array ]
         self.quick = []
+        # merge has [left index of working array wrt main array, middle index of working array wrt main array,
+        # right index of working array wrt main array ]
+        self.merge = []
+        # selection has [[array contains the minimum element after searching], index of minimum element while searching]
+        self.selection = [[], -1]
+        # bubble has [left, right] of two next element
+        self.bubble = [-1, -1]
+        self.insertion = [[], -1, -1]
         self.sleep = 0
-
 
     def get_timer(self):
         """
@@ -55,11 +62,14 @@ class SortAlgorithm:
                 # find the minimum value in an array, from current index
                 if self.array[cur_ind] > self.array[j]:
                     cur_ind = j
+            self.selection[0] = (self.array[0:i])
+            self.selection[1] = cur_ind
             # if index of the minimum value is current index, then swap it
             if cur_ind != i:
                 tmp = self.array[i]
                 self.array[i] = self.array[cur_ind]
                 self.array[cur_ind] = tmp
+
         stop = self.get_timer()
         self.time = stop - start
         return self.array
@@ -76,13 +86,15 @@ class SortAlgorithm:
         self.n = len(self.array)
         # this is a variable which confirm the array were sorted, because of no swap
         con = 1
+        len_sorted = 1
         start = self.get_timer()
         # print(start)
         while con == 1:
             sleep(self.sleep)
             con = 0
             # step 1: compare whole elements in array
-            for i in range(self.n-1):
+            for i in range(self.n-len_sorted):
+                self.bubble = [i, i+1]
                 # swap if the current element is more than next one
                 if self.array[i] > self.array[i+1]:
                     tmp = self.array[i]
@@ -90,6 +102,8 @@ class SortAlgorithm:
                     self.array[i+1] = tmp
                     # this variable is set to 1 , if swap element
                     con = 1
+                sleep(self.sleep)
+            len_sorted += 1
         stop = self.get_timer()
         self.time = stop - start
         return self.array
@@ -128,9 +142,12 @@ class SortAlgorithm:
         """
         start = self.get_timer()
         for i in range(1, self.n):
+            self.insertion[0] = self.array[0:i]
+
             # sort the next element to the exiting sorted array
             for j in range(i):
-                # sleep(0.001)
+                self.insertion[1] = i
+                self.insertion[2] = j
                 # sort element: get next element and find suitable index in exiting sorted array
                 # then delete next element  and insert it to the above index
                 if self.array[i] < self.array[j]:
@@ -161,42 +178,57 @@ class SortAlgorithm:
                 break
         self.recursive_insertion_sort(n-1)
 
-    def merge_sort(self, l, r):
+    def merge_sort(self, left, right):
         """
 
+        :param left:
+        :param right:
         :return:
         """
+        self.merge = []
         # split array
         start = self.get_timer()
-        if r - l > 1:
-            m = int((r - l)/2)
-            # sort first half of array
-            self.merge_sort(l, l+m)
-            # sort second half of array
-            self.merge_sort(l+m, r)
-            i = l
-            j = l + m
-            # save first or second half  to temporary array
-            arr_tmp = self.array[l:r]
-            move = 0
+        if right - left > 1:
+            m = int((right - left)/2)
+            # run merge_sort for first half of array
+            self.merge_sort(left, left+m)
+            # run merge_sort for second half of array
+            self.merge_sort(left+m, right)
+            # after run merge_sort, first and second shall be sorted
+            # sort the first or second half of array
+            i = left
+            j = left + m
+            tmp = []
             # sort the half array
-            # i is index of [41, 47], j  [1, 45]
-            while i < l+m and j < r:
+            while i < left+m and j < right:
                 # sleep(self.sleep)
                 if self.array[i] > self.array[j]:
-                    arr_tmp.pop(j-l)
-                    arr_tmp.insert(i-l+move, self.array[j])
-                    move += 1
+                    tmp.append(self.array[j])
                     j += 1
                 else:
+                    tmp.append(self.array[i])
                     i += 1
+            while i < left+m:
+                tmp.append(self.array[i])
+                i += 1
+            while j < right:
+                tmp.append(self.array[j])
+                j += 1
+            self.merge = [left, m, right]
+            sleep(self.sleep/2)
             # assign to array
-            self.array[l:r] = arr_tmp
-            sleep(self.sleep)
+            self.array[left:right] = tmp
+            sleep(self.sleep/2)
         stop = self.get_timer()
         self.time = stop - start
 
     def quick_sort(self, left, right):
+        """
+
+        :param left:
+        :param right:
+        :return:
+        """
         self.quick = []
         n = right - left
         if n > 1:
@@ -230,18 +262,10 @@ class SortAlgorithm:
             self.array[right-n_big: right] = big
 
             # save information for graphic
-            id_small = []
-            id_big = []
-            # get new pivot
-            id_pivot = left+n_small
-            self.quick.append(id_pivot)
-            # get index of small and big array
-            for i in range(left, left+n_small):
-                id_small.append(i)
-            self.quick.append(id_small)
-            for i in range(right-n_big, right):
-                id_big.append(i)
-            self.quick.append(id_big)
+            self.quick.append(left+n_small)
+            self.quick.append(left)
+            self.quick.append(right)
+            # end
 
             # print(self.array)
             sleep(self.sleep)
@@ -281,6 +305,14 @@ class Graphic:
             rect = ((i*self.distance, 10), (self.width_bar, array[i]*self.multi_height))
             pygame.draw.rect(self.dis, color, rect)
 
+    def draw_element(self, color, index, array):
+        rect = ((index * self.distance, 10), (self.width_bar, array[index] * 4))
+        pygame.draw.rect(self.dis, color, rect)
+
+    def draw_bar_working_array(self, color, left, right):
+        rect = ((left * self.distance, 0), ((right - left) * self.distance, 9))
+        pygame.draw.rect(self.dis, color, rect)
+
     def run(self, color, array, dic_sort_alg={"None": None}):
         n = 0
         self.dis.fill(color)
@@ -292,38 +324,53 @@ class Graphic:
                 # print('quick')
                 # print(quick)
                 id_pivot = quick[0]
-                id_small = quick[1]
-                id_big = quick[2]
+                left = quick[1]
+                right = quick[2]
                 # draw the pivot in display
                 if id_pivot != -1:
-                    rect = ((id_pivot*self.distance, 10), (self.width_bar, array[id_pivot]*self.multi_height))
-                    pygame.draw.rect(self.dis, self.blue, rect)
-                left = -1
-                right = -1
+                    self.draw_element(self.blue, id_pivot, array)
                 # draw small array in display
-                if len(id_small) >= 1:
-                    for i in id_small:
-                        rect = ((i*self.distance, 10), (self.width_bar, array[i]*4))
-                        pygame.draw.rect(self.dis, self.green, rect)
-                    left = id_small[0]
-                    n = len(id_small)
+                for i in range(left, id_pivot):
+                    self.draw_element(self.green, i, array)
                 # draw big array in display
-                if len(id_big) >= 1:
-                    for i in id_big:
-                        rect = ((i*self.distance, 10), (self.width_bar, array[i]*self.multi_height))
-                        pygame.draw.rect(self.dis, self.yellow, rect)
-                    right = id_big[len(id_big)-1]
-                    n = len(id_big)
+                for i in range(id_pivot+1, right):
+                    self.draw_element(self.yellow, i, array)
                 # draw working array which is running quick_sort()
-                if left != -1 and right != -1:
-                    rect = ((left*self.distance, 0), ((right-left+1)*self.distance, 9))
-                    pygame.draw.rect(self.dis, self.purple, rect)
-                elif left != -1:
-                    rect = ((left*self.distance, 0), (n*self.distance, 9))
-                    pygame.draw.rect(self.dis, self.purple, rect)
-                elif right != -1:
-                    rect = (((right-n)*self.distance, 0), ((n+1)*self.distance, 9))
-                    pygame.draw.rect(self.dis, self.purple, rect)
+                self.draw_bar_working_array(self.purple, left, right)
+        if 'merge_sort' in dic_sort_alg:
+            merge = dic_sort_alg['merge_sort']
+            left = merge[0]
+            m = merge[1]
+            right = merge[2]
+            if len(merge) == 3:
+                for i in range(left, left+m):
+                    self.draw_element(self.green, i, array)
+                # draw big array in display
+                for i in range(m+left, right):
+                    self.draw_element(self.yellow, i, array)
+                # draw working array which is running quick_sort()
+                self.draw_bar_working_array(self.purple, left, right)
+        if 'selection_sort' in dic_sort_alg:
+            selection = dic_sort_alg['selection_sort']
+            sorted_array = selection[0]
+            min_id = selection[1]
+            self.draw_array(sorted_array, self.green)
+            self.draw_element(self.blue, min_id, array)
+        if 'bubble_sort' in dic_sort_alg:
+            bubble = dic_sort_alg['bubble_sort']
+            left = bubble[0]
+            right = bubble[1]
+            self.draw_element(self.green, left, array)
+            self.draw_element(self.yellow, right, array)
+            self.draw_bar_working_array(self.purple, left, right+1)
+        if 'insertion_sort' in dic_sort_alg:
+            insertion = dic_sort_alg['insertion_sort']
+            sorted_array = insertion[0]
+            i = insertion[1]
+            j = insertion[2]
+            self.draw_array(sorted_array, self.blue)
+            # self.draw_element(self.green, i, array)
+            self.draw_element(self.yellow, j, array)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
@@ -350,11 +397,18 @@ gra = Graphic(1020, 500)
 gra.init_display()
 # t1 = Thread(target=sort_al1.merge_sort, args=(0, 40,))
 sort_al1.sleep = 0.1
-t1 = Thread(target=sort_al1.quick_sort, args=(0, 100,))
+# t1 = Thread(target=sort_al1.quick_sort, args=(0, 100,))
 # t1 = Thread(target=sort_al1.merge_sort, args=(0, 100,))
+# t1 = Thread(target=sort_al1.selection_sort)
+# t1 = Thread(target=sort_al1.bubble_sort)
+t1 = Thread(target=sort_al1.insertion_sort)
 t1.start()
 while True:
-    gra.run(gra.white, sort_al1.array, {'quick_sort': sort_al1.quick})
+    # gra.run(gra.white, sort_al1.array, {'quick_sort': sort_al1.quick})
+    # gra.run(gra.white, sort_al1.array, {'merge_sort': sort_al1.merge})
+    # gra.run(gra.white, sort_al1.array, {'selection_sort': sort_al1.selection})
+    # gra.run(gra.white, sort_al1.array, {'bubble_sort': sort_al1.bubble})
+    gra.run(gra.white, sort_al1.array, {'insertion_sort': sort_al1.insertion})
 print(sort_al1.array)
 t1.join()
 print(sort_al1.array)
