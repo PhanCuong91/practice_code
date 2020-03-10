@@ -281,48 +281,49 @@ class Graphic:
             rect = ((i*self.distance, 10), (self.width_bar, array[i]*self.multi_height))
             pygame.draw.rect(self.dis, color, rect)
 
-    def run(self, color, array, quick=[-1, [], []]):
+    def run(self, color, array, dic_sort_alg={"None": None}):
         n = 0
         self.dis.fill(color)
         self.draw_array(array, self.red)
-
         # graphic for quick sort algorithm
-        if len(quick) == 3:
-            # print('quick')
-            # print(quick)
-            id_pivot = quick[0]
-            id_small = quick[1]
-            id_big = quick[2]
-            # draw the pivot in display
-            if id_pivot != -1:
-                rect = ((id_pivot*self.distance, 10), (self.width_bar, array[id_pivot]*self.multi_height))
-                pygame.draw.rect(self.dis, self.blue, rect)
-            left = -1
-            right = -1
-            # draw small array in display
-            if len(id_small) >= 1:
-                for i in id_small:
-                    rect = ((i*self.distance, 10), (self.width_bar, array[i]*4))
-                    pygame.draw.rect(self.dis, self.green, rect)
-                left = id_small[0]
-                n = len(id_small)
-            # draw big array in display
-            if len(id_big) >= 1:
-                for i in id_big:
-                    rect = ((i*self.distance, 10), (self.width_bar, array[i]*self.multi_height))
-                    pygame.draw.rect(self.dis, self.yellow, rect)
-                right = id_big[len(id_big)-1]
-                n = len(id_big)
-            # draw working array which is running quick_sort()
-            if left != -1 and right != -1:
-                rect = ((left*self.distance, 0), ((right-left+1)*self.distance, 9))
-                pygame.draw.rect(self.dis, self.purple, rect)
-            elif left != -1:
-                rect = ((left*self.distance, 0), (n*self.distance, 9))
-                pygame.draw.rect(self.dis, self.purple, rect)
-            elif right != -1:
-                rect = (((right-n)*self.distance, 0), ((n+1)*self.distance, 9))
-                pygame.draw.rect(self.dis, self.purple, rect)
+        if 'quick_sort' in dic_sort_alg:
+            quick = dic_sort_alg['quick_sort']
+            if len(quick) == 3:
+                # print('quick')
+                # print(quick)
+                id_pivot = quick[0]
+                id_small = quick[1]
+                id_big = quick[2]
+                # draw the pivot in display
+                if id_pivot != -1:
+                    rect = ((id_pivot*self.distance, 10), (self.width_bar, array[id_pivot]*self.multi_height))
+                    pygame.draw.rect(self.dis, self.blue, rect)
+                left = -1
+                right = -1
+                # draw small array in display
+                if len(id_small) >= 1:
+                    for i in id_small:
+                        rect = ((i*self.distance, 10), (self.width_bar, array[i]*4))
+                        pygame.draw.rect(self.dis, self.green, rect)
+                    left = id_small[0]
+                    n = len(id_small)
+                # draw big array in display
+                if len(id_big) >= 1:
+                    for i in id_big:
+                        rect = ((i*self.distance, 10), (self.width_bar, array[i]*self.multi_height))
+                        pygame.draw.rect(self.dis, self.yellow, rect)
+                    right = id_big[len(id_big)-1]
+                    n = len(id_big)
+                # draw working array which is running quick_sort()
+                if left != -1 and right != -1:
+                    rect = ((left*self.distance, 0), ((right-left+1)*self.distance, 9))
+                    pygame.draw.rect(self.dis, self.purple, rect)
+                elif left != -1:
+                    rect = ((left*self.distance, 0), (n*self.distance, 9))
+                    pygame.draw.rect(self.dis, self.purple, rect)
+                elif right != -1:
+                    rect = (((right-n)*self.distance, 0), ((n+1)*self.distance, 9))
+                    pygame.draw.rect(self.dis, self.purple, rect)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
@@ -353,7 +354,7 @@ t1 = Thread(target=sort_al1.quick_sort, args=(0, 100,))
 # t1 = Thread(target=sort_al1.merge_sort, args=(0, 100,))
 t1.start()
 while True:
-    gra.run(gra.white, sort_al1.array, sort_al1.quick)
+    gra.run(gra.white, sort_al1.array, {'quick_sort': sort_al1.quick})
 print(sort_al1.array)
 t1.join()
 print(sort_al1.array)
