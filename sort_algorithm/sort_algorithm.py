@@ -15,7 +15,10 @@ class SortAlgorithm:
         self.range = rag
         self.array = []
         self.time = 0
-        self.pivot = 0
+        # quick has [pivot, [index of smaller element], [index of bigger element] ]
+        self.quick = []
+        self.sleep = 0
+
 
     def get_timer(self):
         """
@@ -45,7 +48,7 @@ class SortAlgorithm:
         self.n = len(self.array)
         start = self.get_timer()
         for i in range(self.n):
-            sleep(0.1)
+            sleep(self.sleep)
             # get the current index,
             cur_ind = i
             for j in range(i+1, self.n):
@@ -76,7 +79,7 @@ class SortAlgorithm:
         start = self.get_timer()
         # print(start)
         while con == 1:
-            sleep(1)
+            sleep(self.sleep)
             con = 0
             # step 1: compare whole elements in array
             for i in range(self.n-1):
@@ -135,7 +138,7 @@ class SortAlgorithm:
                     self.array.pop(i)
                     self.array.insert(j, tmp)
                     break
-            sleep(0.2)
+            sleep(self.sleep)
         stop = self.get_timer()
         self.time = stop - start
         return self.array
@@ -179,7 +182,7 @@ class SortAlgorithm:
             # sort the half array
             # i is index of [41, 47], j  [1, 45]
             while i < l+m and j < r:
-                # sleep(0.1)
+                # sleep(self.sleep)
                 if self.array[i] > self.array[j]:
                     arr_tmp.pop(j-l)
                     arr_tmp.insert(i-l+move, self.array[j])
@@ -189,47 +192,64 @@ class SortAlgorithm:
                     i += 1
             # assign to array
             self.array[l:r] = arr_tmp
-            sleep(0.2)
+            sleep(self.sleep)
         stop = self.get_timer()
         self.time = stop - start
 
-    def quick_sort(self, arr, l, r):
-        n = len(arr)
-        if len(arr) > 1:
-            pivot = arr[n-1]
+    def quick_sort(self, left, right):
+        self.quick = []
+        n = right - left
+        if n > 1:
+            # get pivot at the end of array
+            # pivot = arr[n-1]
+            pivot = self.array[right-1]
+            # create temp variable
+            # array contains all elements which are less than pivot
             small = []
-            n_small = 0
+            # array contains all elements which are more than pivot
             big = []
-            n_big = 0
-            # print("function array")
-            # print(arr)
-            self.pivot = n-1
-            sleep(2)
-            for i in range(n-1):
-                if arr[i] <= pivot:
-                    n_small += 1
-                    small.append(arr[i])
-                else:
-                    n_big += 1
-                    big.append(arr[i])
-            # self.pivot = l + n_small
-            if len(small) != 0:
-                self.array[l: l+n_small] = small
-            self.array[l+n_small] = pivot
-            if len(big) != 0:
-                self.array[r-n_big: r] = big
 
-            print(self.array)
-            print('function %d' % self.pivot)
-            sleep(1)
-            if len(small) > 1:
-                # print("left is %d and right %d and n small = %d" % (l,r, n_small))
-                # print(small)
-                small = self.quick_sort(small, l, l+n_small)
-            if len(big) > 1:
-                # print("n big = %d and and left %d and right is %d" % (n_big,l, r))
-                # print(big)
-                big = self.quick_sort(big, r-n_big, r)
+            # search array[0:n-2]
+            # if element is less than pivot, then save to small array
+            # if element is more than pivot, then save to big array
+            for i in range(left, right-1):
+                if self.array[i] <= pivot:
+                    # save to small array
+                    small.append(self.array[i])
+                else:
+                    # save to big array
+                    big.append(self.array[i])
+            n_small = len(small)
+            n_big = len(big)
+            # replace main array with small and big array with respective to left and right parameters
+            # assign small array to main array
+            self.array[left: left+n_small] = small
+            # assign pivot to main array
+            self.array[left+n_small] = pivot
+            # assign big array to main array
+            self.array[right-n_big: right] = big
+
+            # save information for graphic
+            id_small = []
+            id_big = []
+            # get new pivot
+            id_pivot = left+n_small
+            self.quick.append(id_pivot)
+            # get index of small and big array
+            for i in range(left, left+n_small):
+                id_small.append(i)
+            self.quick.append(id_small)
+            for i in range(right-n_big, right):
+                id_big.append(i)
+            self.quick.append(id_big)
+
+            # print(self.array)
+            sleep(self.sleep)
+
+            # quick sort with new small and big arrays
+            # do it until length of small and big arrays is 1
+            self.quick_sort(left, left+n_small)
+            self.quick_sort(right-n_big, right)
             return True
         else:
             return []
@@ -239,6 +259,9 @@ class Graphic:
     white = (255, 255, 255)
     red = (255, 0, 0)
     blue = (0, 0, 255)
+    green = (0, 255, 0)
+    yellow = (255, 255, 0)
+    purple = (255, 0, 255)
 
     def __init__(self, w, h):
         self.w = w
@@ -246,28 +269,60 @@ class Graphic:
         self.dis = None
         self.con = False
         self.arr = []
+        self.multi_height = 4
+        self.width_bar = 9
+        self.distance = self.width_bar + 1
 
     def init_display(self):
         self.dis = pygame.display.set_mode((self.w, self.h))
 
     def draw_array(self, array, color):
         for i in range(len(array)):
-            rect = ((i * 5, 10), (4, array[i] * 4))
+            rect = ((i*self.distance, 10), (self.width_bar, array[i]*self.multi_height))
             pygame.draw.rect(self.dis, color, rect)
 
-    def run(self, color, pivot, array):
-        # tmp = 0
-        # arr = []
+    def run(self, color, array, quick=[-1, [], []]):
+        n = 0
         self.dis.fill(color)
         self.draw_array(array, self.red)
-        # if tmp != pivot:
-        #     print(pivot)
-        # if array != arr:
-        #     print(array)
-        # arr = array
-        # tmp = pivot
-        rect = ((pivot * 5, 10), (4, array[pivot] * 4))
-        pygame.draw.rect(self.dis, self.blue, rect)
+
+        # graphic for quick sort algorithm
+        if len(quick) == 3:
+            # print('quick')
+            # print(quick)
+            id_pivot = quick[0]
+            id_small = quick[1]
+            id_big = quick[2]
+            # draw the pivot in display
+            if id_pivot != -1:
+                rect = ((id_pivot*self.distance, 10), (self.width_bar, array[id_pivot]*self.multi_height))
+                pygame.draw.rect(self.dis, self.blue, rect)
+            left = -1
+            right = -1
+            # draw small array in display
+            if len(id_small) >= 1:
+                for i in id_small:
+                    rect = ((i*self.distance, 10), (self.width_bar, array[i]*4))
+                    pygame.draw.rect(self.dis, self.green, rect)
+                left = id_small[0]
+                n = len(id_small)
+            # draw big array in display
+            if len(id_big) >= 1:
+                for i in id_big:
+                    rect = ((i*self.distance, 10), (self.width_bar, array[i]*self.multi_height))
+                    pygame.draw.rect(self.dis, self.yellow, rect)
+                right = id_big[len(id_big)-1]
+                n = len(id_big)
+            # draw working array which is running quick_sort()
+            if left != -1 and right != -1:
+                rect = ((left*self.distance, 0), ((right-left+1)*self.distance, 9))
+                pygame.draw.rect(self.dis, self.purple, rect)
+            elif left != -1:
+                rect = ((left*self.distance, 0), (n*self.distance, 9))
+                pygame.draw.rect(self.dis, self.purple, rect)
+            elif right != -1:
+                rect = (((right-n)*self.distance, 0), ((n+1)*self.distance, 9))
+                pygame.draw.rect(self.dis, self.purple, rect)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
@@ -276,30 +331,32 @@ class Graphic:
                 quit()
 
 
-sort_al = SortAlgorithm(40, 100)
-sort_al1 = SortAlgorithm(40, 100)
+sort_al = SortAlgorithm(100, 100)
+sort_al1 = SortAlgorithm(100, 100)
 ar = sort_al.random_array()
 sort_al1.array = sort_al1.random_array()
 # sort_al1.array = [20, 13, 81, 71, 15, 15, 13, 88, 30, 92]
 # print(ar)
-af = sort_al.insertion_sort()
-print(af)
+# af = sort_al.insertion_sort()
+# print(af)
 print(sort_al1.array)
 print(sort_al1.array.count(91))
 # ar1 = sort_al1.quick_sort(sort_al1.array)
 # print(ar1)
 # print(ar1.count(91))
 
-gra = Graphic(500, 500)
+gra = Graphic(1020, 500)
 gra.init_display()
 # t1 = Thread(target=sort_al1.merge_sort, args=(0, 40,))
-t1 = Thread(target=sort_al1.insertion_sort)
+sort_al1.sleep = 0.1
+t1 = Thread(target=sort_al1.quick_sort, args=(0, 100,))
+# t1 = Thread(target=sort_al1.merge_sort, args=(0, 100,))
 t1.start()
 while True:
-    gra.run(gra.white, sort_al1.pivot, sort_al1.array)
-# print(sort_al1.array)
+    gra.run(gra.white, sort_al1.array, sort_al1.quick)
+print(sort_al1.array)
 t1.join()
-# print(sort_al1.array)
+print(sort_al1.array)
 
 
 print('DOne')
