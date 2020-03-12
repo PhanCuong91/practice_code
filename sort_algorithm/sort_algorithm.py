@@ -340,7 +340,7 @@ class SortAlgorithm:
         m = (max(self.dict_arr['count']))
         n = len(self.dict_arr['count'])
         if m >= n:
-            raise ValueError("Error: length of array should not be more than max element in array ")
+            raise ValueError("Error: max element in array should not be more than length of array ")
         else:
             arr = []
             for i in range(n):
@@ -465,7 +465,7 @@ class Graphic:
                 quit()
 
 
-sort_all = SortAlgorithm(110, 100)
+sort_all = SortAlgorithm(110, 120)
 sort_all.dict_arr['selection'] = sort_all.random_array()
 sort_all.dict_arr['quick'] = sort_all.random_array()
 sort_all.dict_arr['merge'] = sort_all.random_array()
