@@ -14,7 +14,8 @@ class SortAlgorithm:
         self.n = n
         self.range = rag
         self.dict_arr = {'selection': [], 'bubble': [], 're_bubble': [],
-                         're_insertion': [], 'insertion': [], 'merge': [], 'quick': []}
+                         're_insertion': [], 'insertion': [], 'merge': [], 'quick': [],
+                         'heap': [], 'count': []}
         self.time = 0
         """
         dictionary of sort algorithm
@@ -25,11 +26,9 @@ class SortAlgorithm:
                           # right index of working array wrt main array ]
         - quick has [pivot, left index of working array wrt main array, right index of working array wrt main array ]
         """
-        self.dict_sort = {'insertion_sort': [[], -1],
-                          'bubble_sort': [-1, -1],
-                          'selection_sort': [[], -1, -1],
-                          'merge_sort': [-1, -1, -1],
-                          'quick_sort': [-1, -1, -1]}
+        self.dict_gra_infor = {'insertion_sort': [[], -1], 'bubble_sort': [-1, -1], 'selection_sort': [[], -1, -1],
+                               'merge_sort': [-1, -1, -1], 'quick_sort': [-1, -1, -1],'heap_sort': [-1, -1, -1, -1],
+                               'count_sort': []}
         self.sleep = 0
 
     def get_timer(self):
@@ -45,7 +44,7 @@ class SortAlgorithm:
         """
         array = []
         if self.n == 0:
-            self.n = random.randrange(self.range)
+            raise ValueError("Error: length of array should not be zero")
         for i in range(self.n):
             array.append(random.randrange(self.range))
         return array
@@ -62,11 +61,10 @@ class SortAlgorithm:
         self.n = len(array)
         start = self.get_timer()
         for i in range(self.n):
-            sleep(self.sleep)
             # get the current index,
             cur_ind = i
             for j in range(i+1, self.n):
-                self.dict_sort['selection_sort'] = [(array[0:i]), cur_ind, j]
+                self.dict_gra_infor['selection_sort'] = [(array[0:i]), cur_ind, j]
                 sleep(self.sleep)
                 # find the minimum value in an array, from current index
                 if array[cur_ind] > array[j]:
@@ -99,11 +97,11 @@ class SortAlgorithm:
         start = self.get_timer()
         # print(start)
         while con == 1:
-            sleep(self.sleep)
             con = 0
             # step 1: compare whole elements in array
             for i in range(self.n-len_sorted):
-                self.dict_sort['bubble_sort'] = [i, i+1]
+                self.dict_gra_infor['bubble_sort'] = [i, i+1]
+                sleep(self.sleep)
                 # swap if the current element is more than next one
                 if array[i] > array[i+1]:
                     tmp = array[i]
@@ -111,7 +109,6 @@ class SortAlgorithm:
                     array[i+1] = tmp
                     # this variable is set to 1 , if swap element
                     con = 1
-                sleep(self.sleep)
             len_sorted += 1
         stop = self.get_timer()
         self.time = stop - start
@@ -131,6 +128,7 @@ class SortAlgorithm:
         if n == 1:
             return array
         for i in range(n-1):
+            sleep(self.sleep)
             # swap if the current element is more than next one
             # next one will be current
             if array[i] > array[i+1]:
@@ -154,7 +152,8 @@ class SortAlgorithm:
         for i in range(1, self.n):
             # sort the next element to the exiting sorted array
             for j in range(i):
-                self.dict_sort['insertion_sort'] = [array[0:i], j]
+                self.dict_gra_infor['insertion_sort'] = [array[0:i], j, i]
+                sleep(self.sleep)
                 # sort element: get next element and find suitable index in exiting sorted array
                 # then delete next element  and insert it to the above index
                 if array[i] < array[j]:
@@ -162,7 +161,7 @@ class SortAlgorithm:
                     array.pop(i)
                     array.insert(j, tmp)
                     break
-            sleep(self.sleep)
+
         stop = self.get_timer()
         self.time = stop - start
         return array
@@ -209,7 +208,7 @@ class SortAlgorithm:
             tmp = []
             # sort the half array
             while i < left+m and j < right:
-                # sleep(self.sleep)
+                sleep(self.sleep)
                 if self.dict_arr['merge'][i] > self.dict_arr['merge'][j]:
                     tmp.append(self.dict_arr['merge'][j])
                     j += 1
@@ -217,16 +216,16 @@ class SortAlgorithm:
                     tmp.append(self.dict_arr['merge'][i])
                     i += 1
             while i < left+m:
+                sleep(self.sleep)
                 tmp.append(self.dict_arr['merge'][i])
                 i += 1
             while j < right:
+                sleep(self.sleep)
                 tmp.append(self.dict_arr['merge'][j])
                 j += 1
-            self.dict_sort['merge_sort'] = [left, m, right]
-            sleep(self.sleep/2)
+            self.dict_gra_infor['merge_sort'] = [left, m, right]
             # assign to array
             self.dict_arr['merge'][left:right] = tmp
-            sleep(self.sleep/2)
         stop = self.get_timer()
         self.time = stop - start
 
@@ -252,6 +251,7 @@ class SortAlgorithm:
             # if element is less than pivot, then save to small array
             # if element is more than pivot, then save to big array
             for i in range(left, right-1):
+                sleep(self.sleep)
                 if self.dict_arr['quick'][i] <= pivot:
                     # save to small self.dict_arr['quick']
                     small.append(self.dict_arr['quick'][i])
@@ -269,11 +269,10 @@ class SortAlgorithm:
             self.dict_arr['quick'][right-n_big: right] = big
 
             # save information for graphic
-            self.dict_sort['quick_sort'] = [left+n_small, left, right]
+            self.dict_gra_infor['quick_sort'] = [left+n_small, left, right]
             # end
 
             # print(array)
-            sleep(self.sleep)
 
             # quick sort with new small and big arrays
             # do it until length of small and big arrays is 1
@@ -282,6 +281,79 @@ class SortAlgorithm:
             return True
         else:
             return []
+
+    def heap_sort(self, n):
+        arr = []
+        tmp = n-1
+        if n <= 1:
+            return []
+        # sort the binary tree until no change
+        # after get the latest element at first index
+        while arr != self.dict_arr['heap']:
+            arr = self.dict_arr['heap']
+            self.dict_gra_infor['heap_sort'] = [-1, -1, -1, 0]
+            while tmp != 0:
+                left = -1
+                right = -1
+                # binary tree
+                #            0
+                #      1L         2R
+                #    3R 4R     5L    6R
+                #   7 8 9 10  11 12 13 14
+                # end binary tree
+                # if tmp is 6, then i = 2 shall be have left 5 and right 6, next tmp shall be 4
+                # if tmp is 5, then i = 2 shall be have only left 5, next tmp shall be 4
+                if (tmp-2) % 2 == 0:
+                    i = int((tmp-2)/2)
+                    tmp -= 2
+                    left = 2 * i + 1
+                    right = 2 * i + 2
+                elif (tmp-1) % 2 == 0:
+                    i = int((tmp-1)/2)
+                    tmp -= 1
+                    left = 2 * i + 1
+                self.dict_gra_infor['heap_sort'] = [i, left, right, 0]
+                sleep(self.sleep / 2)
+                # find max index of 3 elements in i, left, right
+                max_id = i
+                if left > 0 and arr[max_id] < arr[left]:
+                    max_id = left
+                # print("maxId %d, right %d, len %d" %(max_id, right, len(arr)))
+                if right > 0 and arr[max_id] < arr[right]:
+                    max_id = right
+                # swap the latest element to index i
+                value = arr[max_id]
+                arr[max_id] = arr[i]
+                arr[i] = value
+                self.dict_gra_infor['heap_sort'] = [i, left, right, 1]
+                sleep(self.sleep/2)
+        # push the latest element to the end of array, then run heap_sort with array[0:n-1]
+        temp = arr[0]
+        arr[0] = arr[n-1]
+        arr[n - 1] = temp
+        n = n - 1
+        self.dict_arr['heap'] = arr
+        self.heap_sort(n)
+        return self.dict_arr['heap']
+
+    def count_sort(self):
+        m = (max(self.dict_arr['count']))
+        n = len(self.dict_arr['count'])
+        if m >= n:
+            raise ValueError("Error: length of array should not be more than max element in array ")
+        else:
+            arr = []
+            for i in range(n):
+                arr.append(0)
+            for i in range(n):
+                id = self.dict_arr['count'][i]
+                arr[id] += 1
+            id = 0
+            for i in range(0,n):
+                for j in range(id, arr[i]+id):
+                    self.dict_arr['count'][j] = i
+                id += arr[i]
+            return self.dict_arr['count']
 
 
 class Graphic:
@@ -374,6 +446,17 @@ class Graphic:
             j = insertion[1]
             self.draw_array(sorted_array, self.blue)
             self.draw_element(self.yellow, j, array)
+            self.draw_element(self.green, insertion[2], array)
+        if key == 'heap_sort':
+            heap = dic_sort_alg[key]
+            if heap[3] == 0:
+                self.draw_element(self.yellow, heap[0], array)
+                self.draw_element(self.yellow, heap[1], array)
+                self.draw_element(self.yellow, heap[2], array)
+            if heap[3] == 1:
+                self.draw_element(self.green, heap[0], array)
+                self.draw_element(self.yellow, heap[1], array)
+                self.draw_element(self.yellow, heap[2], array)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT or \
@@ -382,31 +465,45 @@ class Graphic:
                 quit()
 
 
-sort_al1 = SortAlgorithm(100, 100)
-sort_al1.dict_arr['selection'] = sort_al1.random_array()
-sort_al1.dict_arr['quick'] = sort_al1.random_array()
-sort_al1.dict_arr['merge'] = sort_al1.random_array()
-sort_al1.dict_arr['re_insertion'] = sort_al1.random_array()
-sort_al1.dict_arr['insertion'] = sort_al1.random_array()
-sort_al1.dict_arr['bubble'] = sort_al1.random_array()
-# sort_al1.array = [20, 13, 81, 71, 15, 15, 13, 88, 30, 92]
+sort_all = SortAlgorithm(110, 100)
+sort_all.dict_arr['selection'] = sort_all.random_array()
+sort_all.dict_arr['quick'] = sort_all.random_array()
+sort_all.dict_arr['merge'] = sort_all.random_array()
+sort_all.dict_arr['re_insertion'] = sort_all.random_array()
+sort_all.dict_arr['insertion'] = sort_all.random_array()
+sort_all.dict_arr['bubble'] = sort_all.random_array()
+sort_all.dict_arr['heap'] = sort_all.random_array()
+sort_all.dict_arr['count'] = sort_all.random_array()
+# sort_all.dict_arr['count'] = [21, 41, 49, 45, 5, 29, 45, 59, 97, 70, 98, 36, 33, 79, 55, 69, 63, 79, 76, 96, 22, 75, 82, 12, 53, 30, 83, 33, 33, 67, 55, 16, 19, 38, 0, 92, 72, 21, 35, 79, 30, 92, 4, 5, 97, 65, 66, 29, 86, 86, 56, 26, 72, 37, 63, 22, 26, 50, 98, 59, 18, 3, 98, 13, 46, 16, 90, 65, 80, 69, 80, 5, 32, 1, 51, 72, 2, 68, 49, 5, 31, 56, 77, 77, 32, 83, 76, 33, 88, 98, 70, 35, 70, 68, 59, 60, 78, 45, 43, 8]
+print(sort_all.dict_arr['count'])
+sort_all.count_sort()
+print(sort_all.dict_arr['count'])
+# sort_all.dict_arr['heap'] = [16, 28, 11, 94, 56]
+# # print(sort_all.dict_arr['heap'])
+# sort_all.heap_sort(5)
+# print(sort_all.dict_arr['heap'])
+# sort_all.dict_arr['heap'] = [16, 28, 56, 11, 94]
+# # print(sort_all.dict_arr['heap'])
+# sort_all.heap_sort(5)
+# print(sort_all.dict_arr['heap'])
 
-
-gra = Graphic(1020, 500)
-gra.init_display()
-sort_al1.sleep = 0.0
-# t1 = Thread(target=sort_al1.quick_sort, args=(0, 100,))
-# t1 = Thread(target=sort_al1.merge_sort, args=(0, 100,))
-# t1 = Thread(target=sort_al1.selection_sort)
-# t1 = Thread(target=sort_al1.bubble_sort)
-t1 = Thread(target=sort_al1.insertion_sort)
+sort_all.sleep = 0
+# t1 = Thread(target=sort_all.quick_sort, args=(0, 100,))
+# t1 = Thread(target=sort_all.merge_sort, args=(0, 100,))
+# t1 = Thread(target=sort_all.selection_sort)
+# t1 = Thread(target=sort_all.bubble_sort)
+t1 = Thread(target=sort_all.insertion_sort)
+# t1 = Thread(target=sort_all.heap_sort, args=(100,))
 t1.start()
-while True:
-    # gra.run(gra.white, sort_al1.dict_arr['quick'], 'quick_sort', sort_al1.dict_sort)
-    # gra.run(gra.white, sort_al1.dict_arr['merge'], 'merge_sort', sort_al1.dict_sort)
-    # gra.run(gra.white, sort_al1.dict_arr['selection'], 'selection_sort', sort_al1.dict_sort)
-    # gra.run(gra.white, sort_al1.dict_arr['bubble'], 'bubble_sort', sort_al1.dict_sort)
-    gra.run(gra.white, sort_al1.dict_arr['insertion'], 'insertion_sort', sort_al1.dict_sort)
+# gra = Graphic(1020, 500)
+# gra.init_display()
 
+# while True:
+    # gra.run(gra.white, sort_all.dict_arr['quick'], 'quick_sort', sort_all.dict_gra_infor)
+    # gra.run(gra.white, sort_all.dict_arr['merge'], 'merge_sort', sort_all.dict_gra_infor)
+    # gra.run(gra.white, sort_all.dict_arr['selection'], 'selection_sort', sort_all.dict_gra_infor)
+    # gra.run(gra.white, sort_all.dict_arr['bubble'], 'bubble_sort', sort_all.dict_gra_infor)
+    # gra.run(gra.white, sort_all.dict_arr['insertion'], 'insertion_sort', sort_all.dict_gra_infor)
+    # gra.run(gra.white, sort_all.dict_arr['heap'], 'heap_sort', sort_all.dict_gra_infor)
 t1.join()
 print('DOne')
