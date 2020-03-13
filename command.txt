@@ -1,0 +1,2 @@
+1. Install python module
+python -m pip install SomePackage
