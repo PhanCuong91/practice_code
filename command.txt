@@ -1,2 +1,8 @@
 1. Install python module
 python -m pip install SomePackage
+2. git push a local branch to remote
+s1: create a new branch in local
+git checkout -b feature_branch_name
+s2: edit, add and commit ur files
+s3: push ur branch to remote repository
+git push -u origin feature_bra_name
