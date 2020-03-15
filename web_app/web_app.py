@@ -36,17 +36,19 @@ def stuff():
 
 @app.route('/')
 def hello():
+    return render_template("index.html")
 
+
+@app.route('/', methods=['POST'])
+def response():
+    sort_arr.n = int(request.form.get("length"))
+    sort_arr.range = int(request.form.get("range"))
+    sort_arr.dict_arr['selection'] = sort_arr.random_array()
+    print(sort_arr.dict_arr['selection'])
     thr = Thread(target=sort_arr.selection_sort)
     thr.start()
-    return render_template("index.html", arr_before=sort_arr.dict_arr['selection'])
-
-
-@app.route('/response', methods=['POST'])
-def response():
-    fname = request.form.get("fname")
-    note = request.form.get("note")
-    return render_template("index.html", name=fname, note=note)
+    print('run')
+    return render_template("index.html")
 
 
 @app.route('/bar')
@@ -71,6 +73,6 @@ def pie():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 # arr2 = sort_arr.selection_sort()
 # print(arr2)

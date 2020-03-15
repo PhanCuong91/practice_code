@@ -6,8 +6,10 @@
     var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
     <script type="text/javascript">
-    var intervalID = setInterval(update_values,100);
-    function update_values() {
+    //function draw(){
+    var intervalID = setInterval(update,100);
+    //}
+    function update() {
         $.getJSON($SCRIPT_ROOT + '/_stuff',
         function(data) {
             var values = data.array;
@@ -18,22 +20,23 @@
             var width = 15; //bar width
             var X = 50; // first bar position
             var base = 200;
-            var color = '#000000';
-            draw_array(data.array, width, X, canvas);
+            var color = '#ff0000';
+            draw_array(data.array, color, width, X, canvas);
 
             /* Text to display scale */
             ctx.fillStyle = '#000000';
-            //ctx.fillText('Scale X : '+canvas.width+' Y : '+canvas.height,900,10);
+
             ctx.fillText(data.sorted, 800, 10);
              if (data.sorted === true){
+                clearInterval(intervalID);
                 reset(data.sorted);
              }
         });
     };
-    function draw_array(array, width, start_pos, canvas){
+    function draw_array(array, color, width, start_pos, canvas){
         var ctx = canvas.getContext('2d');
         for (var i =0; i<array.length; i++) {
-            ctx.fillStyle = '#ff0000';
+            ctx.fillStyle = color;
             var h = array[i]*5;
             ctx.fillRect(start_pos,canvas.height - h,width,h);
             start_pos +=  width+1;
@@ -41,7 +44,7 @@
             ctx.fillStyle = '#4da6ff';
             ctx.fillText(''+(h/5),start_pos-(width+1),canvas.height - h -10);
         }
-    }
+    };
     function reset(b){
         if(b===true){
           clearInterval(intervalID);
@@ -61,6 +64,11 @@
  style=" border:1px="" solid="" #c3c3c3;"="">
 </canvas>
 <body>
+<form method="POST" action="/">
+    Length of array: <input type="text" name="length" required><br>
+    Range of array's element: <input type="text" name="range" required><br>
+    <input type="submit" value="Submit">
+</form>
 <p>{{arr_before}}</p>
 </body>
 
