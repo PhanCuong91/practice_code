@@ -356,154 +356,22 @@ class SortAlgorithm:
             return self.dict_arr['count']
 
 
-class Graphic:
-    white = (255, 255, 255)
-    red = (255, 0, 0)
-    blue = (0, 0, 255)
-    green = (0, 255, 0)
-    yellow = (255, 255, 0)
-    purple = (255, 0, 255)
+if __name__ =="__main__":
 
-    def __init__(self, w, h):
-        self.w = w
-        self.h = h
-        self.dis = None
-        self.con = False
-        self.arr = []
-        self.multi_height = 4
-        self.width_bar = 9
-        self.distance = self.width_bar + 1
+    sort_all = SortAlgorithm(110, 120)
+    sort_all.dict_arr['selection'] = sort_all.random_array()
+    sort_all.dict_arr['quick'] = sort_all.random_array()
+    sort_all.dict_arr['merge'] = sort_all.random_array()
+    sort_all.dict_arr['re_insertion'] = sort_all.random_array()
+    sort_all.dict_arr['insertion'] = sort_all.random_array()
+    sort_all.dict_arr['bubble'] = sort_all.random_array()
+    sort_all.dict_arr['heap'] = sort_all.random_array()
+    sort_all.dict_arr['count'] = sort_all.random_array()
 
-    def init_display(self):
-        self.dis = pygame.display.set_mode((self.w, self.h))
+    print(sort_all.dict_arr['count'])
+    sort_all.count_sort()
+    print(sort_all.dict_arr['count'])
 
-    def draw_array(self, array, color):
-        for i in range(len(array)):
-            rect = ((i*self.distance, 10), (self.width_bar, array[i]*self.multi_height))
-            pygame.draw.rect(self.dis, color, rect)
+    sort_all.sleep = 0
 
-    def draw_element(self, color, index, array):
-        rect = ((index * self.distance, 10), (self.width_bar, array[index]*self.multi_height))
-        pygame.draw.rect(self.dis, color, rect)
-
-    def draw_bar_working_array(self, color, left, right):
-        rect = ((left * self.distance, 0), ((right - left) * self.distance, 9))
-        pygame.draw.rect(self.dis, color, rect)
-
-    def run(self, color, array, key="None", dic_sort_alg=[]):
-        # n = 0
-        self.dis.fill(color)
-        self.draw_array(array, self.red)
-        # graphic for quick sort algorithm
-        if 'quick_sort' == key:
-            quick = dic_sort_alg['quick_sort']
-            if len(quick) == 3:
-                id_pivot = quick[0]
-                left = quick[1]
-                right = quick[2]
-                # draw the pivot in display
-                if id_pivot != -1:
-                    self.draw_element(self.blue, id_pivot, array)
-                # draw small array in display
-                for i in range(left, id_pivot):
-                    self.draw_element(self.green, i, array)
-                # draw big array in display
-                for i in range(id_pivot+1, right):
-                    self.draw_element(self.yellow, i, array)
-                # draw working array which is running quick_sort()
-                self.draw_bar_working_array(self.purple, left, right)
-        if 'merge_sort' == key:
-            merge = dic_sort_alg['merge_sort']
-            left = merge[0]
-            m = merge[1]
-            right = merge[2]
-            if len(merge) == 3:
-                for i in range(left, left+m):
-                    self.draw_element(self.green, i, array)
-                # draw big array in display
-                for i in range(m+left, right):
-                    self.draw_element(self.yellow, i, array)
-                # draw working array which is running quick_sort()
-                self.draw_bar_working_array(self.purple, left, right)
-        if 'selection_sort' == key:
-            selection = dic_sort_alg['selection_sort']
-            sorted_array = selection[0]
-            min_id = selection[1]
-            s = selection[2]
-            self.draw_array(sorted_array, self.green)
-            self.draw_element(self.blue, min_id, array)
-            self.draw_element(self.yellow, s, array)
-        if 'bubble_sort' == key:
-            bubble = dic_sort_alg['bubble_sort']
-            left = bubble[0]
-            right = bubble[1]
-            self.draw_element(self.green, left, array)
-            self.draw_element(self.yellow, right, array)
-            self.draw_bar_working_array(self.purple, left, right+1)
-        if 'insertion_sort' == key:
-            insertion = dic_sort_alg[key]
-            sorted_array = insertion[0]
-            j = insertion[1]
-            self.draw_array(sorted_array, self.blue)
-            self.draw_element(self.yellow, j, array)
-            self.draw_element(self.green, insertion[2], array)
-        if key == 'heap_sort':
-            heap = dic_sort_alg[key]
-            if heap[3] == 0:
-                self.draw_element(self.yellow, heap[0], array)
-                self.draw_element(self.yellow, heap[1], array)
-                self.draw_element(self.yellow, heap[2], array)
-            if heap[3] == 1:
-                self.draw_element(self.green, heap[0], array)
-                self.draw_element(self.yellow, heap[1], array)
-                self.draw_element(self.yellow, heap[2], array)
-        pygame.display.update()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or \
-                    (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                pygame.quit()
-                quit()
-
-
-sort_all = SortAlgorithm(110, 120)
-sort_all.dict_arr['selection'] = sort_all.random_array()
-sort_all.dict_arr['quick'] = sort_all.random_array()
-sort_all.dict_arr['merge'] = sort_all.random_array()
-sort_all.dict_arr['re_insertion'] = sort_all.random_array()
-sort_all.dict_arr['insertion'] = sort_all.random_array()
-sort_all.dict_arr['bubble'] = sort_all.random_array()
-sort_all.dict_arr['heap'] = sort_all.random_array()
-sort_all.dict_arr['count'] = sort_all.random_array()
-# sort_all.dict_arr['count'] = [21, 41, 49, 45, 5, 29, 45, 59, 97, 70, 98, 36, 33, 79, 55, 69, 63, 79, 76, 96, 22, 75, 82, 12, 53, 30, 83, 33, 33, 67, 55, 16, 19, 38, 0, 92, 72, 21, 35, 79, 30, 92, 4, 5, 97, 65, 66, 29, 86, 86, 56, 26, 72, 37, 63, 22, 26, 50, 98, 59, 18, 3, 98, 13, 46, 16, 90, 65, 80, 69, 80, 5, 32, 1, 51, 72, 2, 68, 49, 5, 31, 56, 77, 77, 32, 83, 76, 33, 88, 98, 70, 35, 70, 68, 59, 60, 78, 45, 43, 8]
-print(sort_all.dict_arr['count'])
-sort_all.count_sort()
-print(sort_all.dict_arr['count'])
-# sort_all.dict_arr['heap'] = [16, 28, 11, 94, 56]
-# # print(sort_all.dict_arr['heap'])
-# sort_all.heap_sort(5)
-# print(sort_all.dict_arr['heap'])
-# sort_all.dict_arr['heap'] = [16, 28, 56, 11, 94]
-# # print(sort_all.dict_arr['heap'])
-# sort_all.heap_sort(5)
-# print(sort_all.dict_arr['heap'])
-
-sort_all.sleep = 0
-# t1 = Thread(target=sort_all.quick_sort, args=(0, 100,))
-# t1 = Thread(target=sort_all.merge_sort, args=(0, 100,))
-# t1 = Thread(target=sort_all.selection_sort)
-# t1 = Thread(target=sort_all.bubble_sort)
-t1 = Thread(target=sort_all.insertion_sort)
-# t1 = Thread(target=sort_all.heap_sort, args=(100,))
-t1.start()
-# gra = Graphic(1020, 500)
-# gra.init_display()
-
-# while True:
-    # gra.run(gra.white, sort_all.dict_arr['quick'], 'quick_sort', sort_all.dict_gra_infor)
-    # gra.run(gra.white, sort_all.dict_arr['merge'], 'merge_sort', sort_all.dict_gra_infor)
-    # gra.run(gra.white, sort_all.dict_arr['selection'], 'selection_sort', sort_all.dict_gra_infor)
-    # gra.run(gra.white, sort_all.dict_arr['bubble'], 'bubble_sort', sort_all.dict_gra_infor)
-    # gra.run(gra.white, sort_all.dict_arr['insertion'], 'insertion_sort', sort_all.dict_gra_infor)
-    # gra.run(gra.white, sort_all.dict_arr['heap'], 'heap_sort', sort_all.dict_gra_infor)
-t1.join()
-print('DOne')
+    print('DOne')
