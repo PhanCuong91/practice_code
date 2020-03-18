@@ -15,7 +15,7 @@ class SortAlgorithm:
         self.range = rag
         self.dict_arr = {'selection': [], 'bubble': [], 're_bubble': [],
                          're_insertion': [], 'insertion': [], 'merge': [], 'quick': [],
-                         'heap': [], 'count': []}
+                         'heap': [], 'count': [], 'radix': []}
         self.time = 0
         """
         dictionary of sort algorithm
@@ -26,9 +26,9 @@ class SortAlgorithm:
                           # right index of working array wrt main array ]
         - quick has [pivot, left index of working array wrt main array, right index of working array wrt main array ]
         """
-        self.dict_gra_infor = {'insertion_sort': [[], -1], 'bubble_sort': [-1, -1], 'selection_sort': [[], -1, -1],
-                               'merge_sort': [-1, -1, -1], 'quick_sort': [-1, -1, -1],'heap_sort': [-1, -1, -1, -1],
-                               'count_sort': []}
+        self.dict_gra_infor = {'insert': [[], -1], 'bubble': [-1, -1], 'selection': [[], -1, -1],
+                               'merge': [-1, -1, -1], 'quick': [-1, -1, -1], 'heap': [-1, -1, -1, -1],
+                               'count': [], 'radix': []}
         self.sleep = 0
 
     def get_timer(self):
@@ -64,7 +64,7 @@ class SortAlgorithm:
             # get the current index,
             cur_ind = i
             for j in range(i+1, self.n):
-                self.dict_gra_infor['selection_sort'] = [(array[0:i]), cur_ind, j]
+                self.dict_gra_infor['selection'] = [(array[0:i]), cur_ind, j]
                 sleep(self.sleep)
                 # find the minimum value in an array, from current index
                 if array[cur_ind] > array[j]:
@@ -100,7 +100,7 @@ class SortAlgorithm:
             con = 0
             # step 1: compare whole elements in array
             for i in range(self.n-len_sorted):
-                self.dict_gra_infor['bubble_sort'] = [i, i+1]
+                self.dict_gra_infor['bubble'] = [i, i+1]
                 sleep(self.sleep)
                 # swap if the current element is more than next one
                 if array[i] > array[i+1]:
@@ -152,7 +152,7 @@ class SortAlgorithm:
         for i in range(1, self.n):
             # sort the next element to the exiting sorted array
             for j in range(i):
-                self.dict_gra_infor['insertion_sort'] = [array[0:i], j, i]
+                self.dict_gra_infor['insert'] = [array[0:i], j, i]
                 sleep(self.sleep)
                 # sort element: get next element and find suitable index in exiting sorted array
                 # then delete next element  and insert it to the above index
@@ -223,7 +223,7 @@ class SortAlgorithm:
                 sleep(self.sleep)
                 tmp.append(self.dict_arr['merge'][j])
                 j += 1
-            self.dict_gra_infor['merge_sort'] = [left, m, right]
+            self.dict_gra_infor['merge'] = [left, m, right]
             # assign to array
             self.dict_arr['merge'][left:right] = tmp
         stop = self.get_timer()
@@ -269,7 +269,7 @@ class SortAlgorithm:
             self.dict_arr['quick'][right-n_big: right] = big
 
             # save information for graphic
-            self.dict_gra_infor['quick_sort'] = [left+n_small, left, right]
+            self.dict_gra_infor['quick'] = [left+n_small, left, right]
             # end
 
             # print(array)
@@ -291,7 +291,7 @@ class SortAlgorithm:
         # after get the latest element at first index
         while arr != self.dict_arr['heap']:
             arr = self.dict_arr['heap']
-            self.dict_gra_infor['heap_sort'] = [-1, -1, -1, 0]
+            self.dict_gra_infor['heap'] = [-1, -1, -1, 0]
             while tmp != 0:
                 left = -1
                 right = -1
@@ -312,7 +312,7 @@ class SortAlgorithm:
                     i = int((tmp-1)/2)
                     tmp -= 1
                     left = 2 * i + 1
-                self.dict_gra_infor['heap_sort'] = [i, left, right, 0]
+                self.dict_gra_infor['heap'] = [i, left, right, 0]
                 sleep(self.sleep / 2)
                 # find max index of 3 elements in i, left, right
                 max_id = i
@@ -325,7 +325,7 @@ class SortAlgorithm:
                 value = arr[max_id]
                 arr[max_id] = arr[i]
                 arr[i] = value
-                self.dict_gra_infor['heap_sort'] = [i, left, right, 1]
+                self.dict_gra_infor['heap'] = [i, left, right, 1]
                 sleep(self.sleep/2)
         # push the latest element to the end of array, then run heap_sort with array[0:n-1]
         temp = arr[0]
@@ -355,10 +355,31 @@ class SortAlgorithm:
                 id += arr[i]
             return self.dict_arr['count']
 
+    def radix_sort(self):
+        arr = self.dict_arr['radix']
+        n = len(arr)
+        max_v = max(arr)
+        exp = 1
+        while int(max_v / exp) > 0:
+            count = [0] * 10
+            out = [0] * n
+            for i in range(n):
+                count[int((arr[i]/exp)%10)] += 1
+            for i in range(1, 10):
+                count[i] += count[i-1]
+            for i in range(n):
+                id = count[int((arr[n-i-1]/exp)%10)]-1
+                out[id] = arr[n-i-1]
+                count[int((arr[n-i-1]/exp)%10)] -= 1
+            arr = out
+            exp *= 10
+        self.dict_arr['radix'] = arr
+        return True
+
 
 if __name__ =="__main__":
 
-    sort_all = SortAlgorithm(110, 120)
+    sort_all = SortAlgorithm(50, 500)
     sort_all.dict_arr['selection'] = sort_all.random_array()
     sort_all.dict_arr['quick'] = sort_all.random_array()
     sort_all.dict_arr['merge'] = sort_all.random_array()
@@ -368,9 +389,11 @@ if __name__ =="__main__":
     sort_all.dict_arr['heap'] = sort_all.random_array()
     sort_all.dict_arr['count'] = sort_all.random_array()
 
-    print(sort_all.dict_arr['count'])
-    sort_all.count_sort()
-    print(sort_all.dict_arr['count'])
+    sort_all.dict_arr['radix'] = sort_all.random_array()
+    # sort_all.dict_arr['radix'] =[2, 62, 28, 36, 5, 52, 119, 95, 104, 0]
+    print(sort_all.dict_arr['radix'])
+    sort_all.radix_sort()
+    print(sort_all.dict_arr['radix'])
 
     sort_all.sleep = 0
 
