@@ -34,6 +34,9 @@ class Graphic:
     def draw_bar_working_array(self, color, left, right):
         rect = ((left * self.distance, 0), ((right - left) * self.distance, 9))
         pygame.draw.rect(self.dis, color, rect)
+    def menu_display(self, color):
+        self.dis.fill(color)
+
 
     def run(self, color, array, key="None", dic_sort_alg=[]):
         # n = 0

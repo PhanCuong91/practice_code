@@ -15,7 +15,7 @@ class SortAlgorithm:
         self.range = rag
         self.dict_arr = {'selection': [], 'bubble': [], 're_bubble': [],
                          're_insertion': [], 'insertion': [], 'merge': [], 'quick': [],
-                         'heap': [], 'count': [], 'radix': []}
+                         'heap': [], 'count': [], 'radix': [], 'shell': []}
         self.time = 0
         """
         dictionary of sort algorithm
@@ -28,7 +28,7 @@ class SortAlgorithm:
         """
         self.dict_gra_infor = {'insert': [[], -1], 'bubble': [-1, -1], 'selection': [[], -1, -1],
                                'merge': [-1, -1, -1], 'quick': [-1, -1, -1], 'heap': [-1, -1, -1, -1],
-                               'count': [], 'radix': []}
+                               'count': [], 'radix': [], 'shell': []}
         self.sleep = 0
 
     def get_timer(self):
@@ -36,6 +36,16 @@ class SortAlgorithm:
         :return: time when this function is called from beginning
         """
         return timeit.default_timer()
+
+    def swap_arr(self, arr, id_1, id_2):
+        n = len(arr)
+        if id_1 < n and id_2 < n:
+            temp = arr[id_1]
+            arr[id_1] = arr[id_2]
+            arr[id_2] = temp
+        else:
+            raise ValueError("Error: index should not be more than length of array ")
+        return arr
 
     def random_array(self):
         """
@@ -376,10 +386,27 @@ class SortAlgorithm:
         self.dict_arr['radix'] = arr
         return True
 
+    def shell_sort(self):
+        arr = self.dict_arr['shell']
+        n = len(arr)
+        gap = int(n/2)
+        while gap >= 1:
+            i = 0
+            while i+gap < n:
+                j = i
+                while j-gap >= 0:
+                    if arr[j] < arr[j-gap]:
+                        self.swap_arr(arr, j, j-gap)
+                    j = j-gap
+                i += 1
+            gap = int(gap/2)
+        self.dict_arr['shell'] = arr
+        return True
 
-if __name__ =="__main__":
 
-    sort_all = SortAlgorithm(50, 500)
+if __name__ == "__main__":
+
+    sort_all = SortAlgorithm(50, 50)
     sort_all.dict_arr['selection'] = sort_all.random_array()
     sort_all.dict_arr['quick'] = sort_all.random_array()
     sort_all.dict_arr['merge'] = sort_all.random_array()
@@ -388,12 +415,12 @@ if __name__ =="__main__":
     sort_all.dict_arr['bubble'] = sort_all.random_array()
     sort_all.dict_arr['heap'] = sort_all.random_array()
     sort_all.dict_arr['count'] = sort_all.random_array()
-
     sort_all.dict_arr['radix'] = sort_all.random_array()
-    # sort_all.dict_arr['radix'] =[2, 62, 28, 36, 5, 52, 119, 95, 104, 0]
-    print(sort_all.dict_arr['radix'])
-    sort_all.radix_sort()
-    print(sort_all.dict_arr['radix'])
+    sort_all.dict_arr['shell'] = sort_all.random_array()
+    # sort_all.dict_arr['shell'] =[9,8,3,7,5,6,4,1,2]
+    print(sort_all.dict_arr['shell'])
+    sort_all.shell_sort()
+    print(sort_all.dict_arr['shell'])
 
     sort_all.sleep = 0
 
