@@ -451,13 +451,13 @@ class SortAlgorithm:
                     else:
                         turn = 1
                     index = index + m
-            m *= 2
+                m *= 2
         else:
             raise ValueError("Error: length of array is not a power of 2")
 
 
 if __name__ == "__main__":
-    sort_all = SortAlgorithm(54, 50)
+    sort_all = SortAlgorithm(64, 100)
     sort_all.dict_arr['selection'] = sort_all.random_array()
     sort_all.dict_arr['quick'] = sort_all.random_array()
     sort_all.dict_arr['merge'] = sort_all.random_array()
