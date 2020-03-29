@@ -1,8 +1,7 @@
 import random
 import timeit
-from threading import Thread
 from time import sleep
-import pygame
+import math
 
 
 class SortAlgorithm:
@@ -15,7 +14,7 @@ class SortAlgorithm:
         self.range = rag
         self.dict_arr = {'selection': [], 'bubble': [], 're_bubble': [],
                          're_insertion': [], 'insertion': [], 'merge': [], 'quick': [],
-                         'heap': [], 'count': [], 'radix': [], 'shell': []}
+                         'heap': [], 'count': [], 'radix': [], 'shell': [], 'bitonic': []}
         self.time = 0
         """
         dictionary of sort algorithm
@@ -28,7 +27,7 @@ class SortAlgorithm:
         """
         self.dict_gra_infor = {'insert': [[], -1], 'bubble': [-1, -1], 'selection': [[], -1, -1],
                                'merge': [-1, -1, -1], 'quick': [-1, -1, -1], 'heap': [-1, -1, -1, -1],
-                               'count': [], 'radix': [], 'shell': []}
+                               'count': [], 'radix': [], 'shell': [], 'bitonic':[]}
         self.sleep = 0
 
     def get_timer(self):
@@ -46,6 +45,21 @@ class SortAlgorithm:
         else:
             raise ValueError("Error: index should not be more than length of array ")
         return arr
+
+    def Log2(self, x):
+        # Function to check
+        # Log base 2
+        if x == 0:
+            return False
+
+        return (math.log10(x) /
+                math.log10(2));
+
+    def isPowerOfTwo(self, n):
+        # Function to check
+        # if x is power of 2
+        return (math.ceil(self.Log2(n)) ==
+                math.floor(self.Log2(n)));
 
     def random_array(self):
         """
@@ -403,10 +417,47 @@ class SortAlgorithm:
         self.dict_arr['shell'] = arr
         return True
 
+    def bitonic_swap(self, left, right, turn, m):
+        n = int((right - left)/2)
+        arr = self.dict_arr['bitonic']
+        if m == 1:
+            return arr
+        else:
+            for i in range(left, left+n):
+                if turn == 1 and arr[i] > arr[i+n]:
+                    self.swap_arr(arr, i, i+n)
+                if turn == 0 and arr[i] < arr[i+n]:
+                    self.swap_arr(arr, i, i+n)
+            print(m)
+            m = int(m/2)
+            print(arr)
+            self.bitonic_swap(left, left+n, turn, m)
+            self.bitonic_swap(left+n, right, turn, m)
+        self.dict_arr['bitonic'] = arr
+
+    def bitonic_sort(self):
+        arr = self.dict_arr['bitonic']
+        n = len(arr)
+        if self.isPowerOfTwo(n):
+            m = 2
+            turn = 1
+            i = 0
+            while m <= n:
+                index = 0
+                while index < n:
+                    self.bitonic_swap(index, index+m, turn, m)
+                    if turn == 1:
+                        turn = 0
+                    else:
+                        turn = 1
+                    index = index + m
+            m *= 2
+        else:
+            raise ValueError("Error: length of array is not a power of 2")
+
 
 if __name__ == "__main__":
-
-    sort_all = SortAlgorithm(50, 50)
+    sort_all = SortAlgorithm(54, 50)
     sort_all.dict_arr['selection'] = sort_all.random_array()
     sort_all.dict_arr['quick'] = sort_all.random_array()
     sort_all.dict_arr['merge'] = sort_all.random_array()
@@ -417,11 +468,12 @@ if __name__ == "__main__":
     sort_all.dict_arr['count'] = sort_all.random_array()
     sort_all.dict_arr['radix'] = sort_all.random_array()
     sort_all.dict_arr['shell'] = sort_all.random_array()
-    # sort_all.dict_arr['shell'] =[9,8,3,7,5,6,4,1,2]
-    print(sort_all.dict_arr['shell'])
-    sort_all.shell_sort()
-    print(sort_all.dict_arr['shell'])
-
+    sort_all.dict_arr['bitonic'] = sort_all.random_array()
+    # sort_all.dict_arr['bitonic'] = [37, 4, 14, 28, 21, 19, 28, 19, 9, 44, 29, 34, 44, 31, 46, 49]
+    print(sort_all.dict_arr['bitonic'])
+    sort_all.bitonic_sort()
+    print(sort_all.dict_arr['bitonic'])
+    sort_all.dict_arr['insertion'] = sort_all.dict_arr['bitonic']
     sort_all.sleep = 0
 
     print('DOne')

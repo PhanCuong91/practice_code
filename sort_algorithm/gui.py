@@ -2,7 +2,7 @@ from graphic import Graphic
 from sort_algorithm import SortAlgorithm
 from threading import Thread
 
-sort_all = SortAlgorithm(110, 100)
+sort_all = SortAlgorithm(64, 100)
 sort_all.dict_arr['selection'] = sort_all.random_array()
 sort_all.dict_arr['quick'] = sort_all.random_array()
 sort_all.dict_arr['merge'] = sort_all.random_array()
@@ -10,9 +10,12 @@ sort_all.dict_arr['re_insertion'] = sort_all.random_array()
 sort_all.dict_arr['insertion'] = sort_all.random_array()
 sort_all.dict_arr['bubble'] = sort_all.random_array()
 sort_all.dict_arr['heap'] = sort_all.random_array()
-sort_all.dict_arr['count'] = sort_all.random_array()
+# sort_all.dict_arr['count'] = sort_all.random_array()
+sort_all.dict_arr['bitonic'] = sort_all.random_array()
+sort_all.bitonic_sort()
 print(sort_all.dict_arr['count'])
-sort_all.count_sort()
+sort_all.dict_arr['insertion'] = sort_all.dict_arr['bitonic']
+# sort_all.count_sort()
 print(sort_all.dict_arr['count'])
 # sort_all.dict_arr['heap'] = [16, 28, 11, 94, 56]
 # # print(sort_all.dict_arr['heap'])
@@ -28,9 +31,9 @@ sort_all.sleep = 0.3
 # t1 = Thread(target=sort_all.merge_sort, args=(0, 100,))
 # t1 = Thread(target=sort_all.selection_sort)
 # t1 = Thread(target=sort_all.bubble_sort)
-t1 = Thread(target=sort_all.insertion_sort)
+# t1 = Thread(target=sort_all.insertion_sort)
 # t1 = Thread(target=sort_all.heap_sort, args=(100,))
-t1.start()
+# t1.start()
 gra = Graphic(1020, 500)
 gra.init_display()
 
