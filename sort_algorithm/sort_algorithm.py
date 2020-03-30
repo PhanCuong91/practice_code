@@ -14,7 +14,7 @@ class SortAlgorithm:
         self.range = rag
         self.dict_arr = {'selection': [], 'bubble': [], 're_bubble': [],
                          're_insertion': [], 'insertion': [], 'merge': [], 'quick': [],
-                         'heap': [], 'count': [], 'radix': [], 'shell': [], 'bitonic': []}
+                         'heap': [], 'count': [], 'radix': [], 'shell': [], 'bitonic': [], 'binary_insert': []}
         self.time = 0
         """
         dictionary of sort algorithm
@@ -27,7 +27,7 @@ class SortAlgorithm:
         """
         self.dict_gra_infor = {'insert': [[], -1], 'bubble': [-1, -1], 'selection': [[], -1, -1],
                                'merge': [-1, -1, -1], 'quick': [-1, -1, -1], 'heap': [-1, -1, -1, -1],
-                               'count': [], 'radix': [], 'shell': [], 'bitonic':[]}
+                               'count': [], 'radix': [], 'shell': [], 'bitonic': [], 'binary_insert': []}
         self.sleep = 0
 
     def get_timer(self):
@@ -428,9 +428,7 @@ class SortAlgorithm:
                     self.swap_arr(arr, i, i+n)
                 if turn == 0 and arr[i] < arr[i+n]:
                     self.swap_arr(arr, i, i+n)
-            print(m)
             m = int(m/2)
-            print(arr)
             self.bitonic_swap(left, left+n, turn, m)
             self.bitonic_swap(left+n, right, turn, m)
         self.dict_arr['bitonic'] = arr
@@ -455,6 +453,41 @@ class SortAlgorithm:
         else:
             raise ValueError("Error: length of array is not a power of 2")
 
+    @ staticmethod
+    def binary_search(left, right, sorted_arr, insert_ele):
+        mid = int((right-left)/2)
+        if mid == 0:
+            if sorted_arr[left] >= insert_ele:
+                return left
+            if sorted_arr[right] <= insert_ele:
+                return right
+        if sorted_arr[mid+left] >= insert_ele:
+            right = mid-1+left
+        if sorted_arr[mid+left] < insert_ele:
+            left = mid+1+left
+        return SortAlgorithm.binary_search(left, right, sorted_arr, insert_ele)
+
+    def binary_insert_sort(self):
+        arr = self.dict_arr['binary_insert']
+        n = len(arr)
+        sorted_arr = [arr[0]]
+        for i in range(1, n):
+            left = 0
+            right = i-1
+            mid = SortAlgorithm.binary_search(left, right, sorted_arr, arr[i])
+            if sorted_arr[mid] >= arr[i]:
+                if mid == 0:
+                    sorted_arr.insert(0, arr[i])
+                else:
+                    sorted_arr.insert(mid, arr[i])
+            else:
+                if mid == n:
+                    sorted_arr.insert(n, arr[i])
+                else:
+                    sorted_arr.insert(mid+1, arr[i])
+        self.dict_arr['binary_insert'] = sorted_arr
+        return self.dict_arr['binary_insert']
+
 
 if __name__ == "__main__":
     sort_all = SortAlgorithm(64, 100)
@@ -469,11 +502,15 @@ if __name__ == "__main__":
     sort_all.dict_arr['radix'] = sort_all.random_array()
     sort_all.dict_arr['shell'] = sort_all.random_array()
     sort_all.dict_arr['bitonic'] = sort_all.random_array()
+    sort_all.dict_arr['binary_insert'] = [34, 81, 66, 94, 5, 86, 95, 55, 29, 5, 58, 88, 49, 3, 44, 18, 85, 92, 99, 77, 16, 6, 6, 63, 40, 32, 66, 85, 81, 29, 23, 6, 53, 22, 49, 99, 76, 86, 97, 15, 98, 28, 8, 82, 1, 76, 80, 26, 43, 76, 11, 3, 50, 75, 6, 49, 90, 68, 5, 93, 93, 99, 73, 85]
     # sort_all.dict_arr['bitonic'] = [37, 4, 14, 28, 21, 19, 28, 19, 9, 44, 29, 34, 44, 31, 46, 49]
     print(sort_all.dict_arr['bitonic'])
     sort_all.bitonic_sort()
     print(sort_all.dict_arr['bitonic'])
     sort_all.dict_arr['insertion'] = sort_all.dict_arr['bitonic']
     sort_all.sleep = 0
-
+    print(sort_all.dict_arr['binary_insert'])
+    sort_all.binary_insert_sort()
+    print(sort_all.dict_arr['binary_insert'])
+    # print(sort_all.binary_search(0, 4, [0, 1, 2, 3], 3))
     print('DOne')
