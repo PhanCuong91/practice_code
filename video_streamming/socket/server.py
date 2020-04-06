@@ -1,5 +1,6 @@
 import socket
 import time
+from threading import Thread
 HEADERSIZE = 10
 # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # s.bind((socket.gethostname(), 1234))
@@ -32,28 +33,38 @@ def bind_socket():
 
 
 def accept_socket(arr_con, arr_address):
-    # for i in range(len(arr_con)):
-        # arr_con[i].close()
-    # arr_address = []
-    # arr_con = []
-    # while True:
     conn, add = soc.accept()
-    # arr_con.append(conn)
-    # arr_address.append(add)
-    # send_command(conn)
-    while True:
-        mess_header_size = conn.recv(HEADERSIZE)
-        mess_len = int(mess_header_size.decode('utf-8'))
-        mess = conn.recv(mess_len).decode('utf-8')
-        print(f"{mess}")
+    arr_conn.append(conn)
+    print(f"connection to is accepted with {conn} and {add}")
+    Thread(target=receive_mess, args=(conn,)).start()
+
+
+def broadcast(except_client, mess):
+    for client in arr_conn:
+        if except_client != client:
+            try:
+                mess = f"{len(mess):<{HEADERSIZE}}" + mess
+                client.send(bytes(mess, "utf-8"))
+            except Exception as e:
+                print(f"Broadcast exception is {e}")
 
 
 def receive_mess(conn):
-    mess_header_size = conn.recv(HEADERSIZE)
-    mess_len = int(mess_header_size.decode('utf-8'))
-    mess = conn.recv(mess_len).decode('utf-8')
-    print(f"{mess}")
-    conn.close()
+    while True:
+        try:
+            mess_header_size = conn.recv(HEADERSIZE)
+            mess_len = int(mess_header_size.decode('utf-8'))
+            mess = conn.recv(mess_len).decode('utf-8')
+            print(f"{mess}")
+            if mess == 'Use quit() or Ctrl-Z plus Return to exit':
+                conn.close()
+                arr_conn.remove(conn)
+                print(f"Disconnection")
+                break
+            broadcast(conn, mess)
+        except Exception as e:
+            print(f"[Receive message] Exception is {e}")
+    # conn.close()
 
 
 def send_command(conn):
