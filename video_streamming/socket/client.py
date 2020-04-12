@@ -2,9 +2,13 @@ import socket
 import sys
 import errno
 from threading import Thread
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((socket.gethostname(), 1234))
-client.setblocking(False)
+from gui import ChatRoomGui
+try:
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect((socket.gethostname(), 1234))
+    client.setblocking(False)
+except Exception as e:
+    print(f"connection to server has issue: {e}")
 HEADER_SIZE = 10
 
 
@@ -65,6 +69,7 @@ def get_mess_len(conn):
 
 
 if __name__ == "__main__":
+
     print("your username is:")
     user_name = input("")
     mess = f"{user_name}"

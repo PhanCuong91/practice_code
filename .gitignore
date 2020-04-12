@@ -2,3 +2,4 @@
 venv/
 stack_queue/__pycache__/
 */__pycache__/
+/video_streamming/socket/__pycache__/gui.cpython-37.pyc
