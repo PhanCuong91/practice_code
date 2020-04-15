@@ -5,8 +5,9 @@ from threading import Thread
 
 class ChatRoomGui(Client):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, debug_log=False):
+        super().__init__(debug_log)
+        self.Gui__quit = False
         self.max_len_txt_box = 40
         self.len_txt_box = 60
         self.gui = tk.Tk()
@@ -20,6 +21,9 @@ class ChatRoomGui(Client):
         self.btn_usr_name = tk.Button(self.gui, text='apply', command=(lambda entry_user=self.entry_usr_name:
                                                                        self.apply_usr_name(entry_user)))
         self.btn_usr_name.place(x=350, y=10, height=20, width=100)
+
+        self.btn_quit = tk.Button(self.gui, text='quit', command=self.close_gui)
+        self.btn_quit.place(x=450, y=10, height=20, width=50)
 
         self.txt_send = tk.Text(self.gui)
         self.txt_send.place(x=0, y=400, height=50, width=500)
@@ -40,15 +44,13 @@ class ChatRoomGui(Client):
                                                             self.extract_text(text_send, text_rec))
         self.user_name = ''
 
-        menubar = tk.Menu(self.gui)
-        file = tk.Menu(menubar, tearoff=0)
-        file.add_command(label="Exit", command=self.gui.quit)
-        self.gui.config(menu=menubar)
+    def close_gui(self):
+        self.Gui__quit = True
+        self.gui.quit()
 
         # @staticmethod
     def apply_usr_name(self, entry_user):
         usr_name = entry_user.get()
-        print(f"press button")
         if usr_name != '':
             print(usr_name)
             self.user_name = usr_name
@@ -59,17 +61,17 @@ class ChatRoomGui(Client):
     def extract_text(self, text_send, text_rec):
         try:
             text = text_send.get("1.0", "end")
-            print(f"input text is {text}")
+            if self.debug_log:
+                print(f"Debug log: input text is {text}")
             if text[0] == '\n':
                 text = text[1:len(text)]
             if text[len(text)-1] == '\n':
                 text = text[0:len(text)-1]
-            print(f"remove new line in text")
             text_send.delete("1.0", "end")
             self.insert_text(text_rec, text, self.user_name)
             self.send_mess(self.client, self.user_name, text)
         except Exception as e:
-            print(f"extract_text exception is : {e}")
+            print(f"Gui class, extract_text: exception is {e}")
 
     @staticmethod
     def add_space( num_space, text):
@@ -126,7 +128,8 @@ class ChatRoomGui(Client):
             arr_text = self.analyze_text(text)
             # if len of arr text is 1, it mean that len of mess is less than max len of text box
             if len(arr_text) == 1:
-                print(f"array text is {arr_text}")
+                if self.debug_log:
+                    print(f"Debug log: array text is {arr_text}")
                 # add space to set mess always in right side
                 # num_space = int(len_txt_box-len(arr_text[0]))
                 if user == self.user_name:
@@ -143,6 +146,8 @@ class ChatRoomGui(Client):
                     self.txt_rec["state"] = tk.DISABLED
             # if len of arr text is more than 1, it mean that len of mess is more than max len of text box
             else:
+                if self.debug_log:
+                    print(f"Debug log: array text is {arr_text}")
                 for txt in arr_text:
                     # add space to set mess always in right side
                     # num_space = int(len_txt_box-max_len_txt_box)
@@ -163,16 +168,22 @@ class ChatRoomGui(Client):
 
     def get_mess_from_server(self):
         while True:
+            self.receive_mess(self.Gui__quit)
             if self.rec_bool is True:
-                print(f"\n get_mess_from_server runs")
+                if self.debug_log:
+                    print(f"\nDebug log: get_mess_from_server runs")
+                    print(f"\nDebug log: mess is {self.mess}")
                 self.rec_bool = False
                 self.insert_text(self.txt_rec, self.mess, '')
-                print(f"mess is {self.mess}")
+            if self.Gui__quit:
+                print(f"\nDebug log: gui quit is {self.Gui__quit}")
+                self.Gui__quit = False
+                break
 
 
 if __name__ == "__main__":
-    gui = ChatRoomGui()
-    Thread(target=gui.receive_mess, args=(gui.client,)).start()
-    Thread(target=gui.get_mess_from_server).start()
+    gui = ChatRoomGui(False)
+    get_mess = Thread(target=gui.get_mess_from_server)
+    get_mess.start()
     gui.gui.mainloop()
-    # gui.mainloop()
+    get_mess.join()
