@@ -61,13 +61,12 @@ def broadcast(except_client, mess):
     :param mess: message
     :return: None
     """
-
+    mess = f"{len(mess):<{HEADER_SIZE}}" + mess
     for client in arr_conn:
         # if client is not excepted client
         # then send message
         if except_client != client:
             try:
-                mess = f"{len(mess):<{HEADER_SIZE}}" + mess
                 send_mess(client, mess)
             except Exception as e:
                 print(f"Broadcast exception is {e}")
