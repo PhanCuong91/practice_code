@@ -6,13 +6,14 @@ from threading import Thread
 class ChatRoomGui(Client):
 
     def __init__(self, debug_log=False):
-        super().__init__(debug_log)
+        # super().__init__(debug_log)
         self.Gui__quit = False
         self.max_len_txt_box = 40
         self.len_txt_box = 60
         self.gui = tk.Tk()
         self.gui.title('hello')
         self.gui.geometry("500x500")
+        # self.chat_room_frame()
 
         self.label_usr_name = tk.Label(self.gui, text="user name")
         self.label_usr_name.place(x=10, y=10, height=20, width=100)
@@ -26,10 +27,10 @@ class ChatRoomGui(Client):
         self.btn_quit.place(x=450, y=10, height=20, width=50)
 
         self.txt_send = tk.Text(self.gui)
-        self.txt_send.place(x=0, y=400, height=50, width=500)
+        self.txt_send.place(x=0, y=450, height=50, width=500)
 
         self.txt_rec = tk.Text(self.gui)
-        self.txt_rec.place(x=0, y=100, height=300, width=500)
+        self.txt_rec.place(x=0, y=350, height=100, width=500)
 
         scroll_1 = tk.Scrollbar(self.txt_send, command=self.txt_send.yview)
         self.txt_send.config(yscrollcommand=scroll_1.set)
@@ -43,6 +44,46 @@ class ChatRoomGui(Client):
         self.txt_send.bind("<Return>", lambda event, text_send=self.txt_send, text_rec=self.txt_rec:
                                                             self.extract_text(text_send, text_rec))
         self.user_name = ''
+        self.video()
+
+    def video(self):
+
+        self.btn_setup = tk.Button(self.gui, text='set up', command=self.setup_func)
+        self.btn_setup.place(x=0, y=30, height=20, width=50)
+
+        self.btn_play = tk.Button(self.gui, text='play', command=self.play_func)
+        self.btn_play.place(x=100, y=30, height=20, width=50)
+
+        self.btn_pause = tk.Button(self.gui, text='pause', command=self.pause_func)
+        self.btn_pause.place(x=200, y=30, height=20, width=50)
+
+        self.btn_stop = tk.Button(self.gui, text='stop', command=self.stop_func)
+        self.btn_stop.place(x=300, y=30, height=20, width=50)
+
+        self.text_img = tk.Text(self.gui)
+        self.text_img.place(x=0, y=50, height=300, width=500)
+        self.img = tk.PhotoImage(file="./tracks.png")
+        self.text_img.image_create(tk.END, image=self.img)
+
+    def setup_func(self):
+        mess = self.encode_with_header('SETUP')
+        self.client.send(bytes(mess), "utf-8")
+        pass
+
+    def play_func(self):
+        mess = self.encode_with_header('PLAY')
+        self.client.send(bytes(mess), "utf-8")
+        pass
+
+    def pause_func(self):
+        mess = self.encode_with_header('PAUSE')
+        self.client.send(bytes(mess), "utf-8")
+        pass
+
+    def stop_func(self):
+        mess = self.encode_with_header('STOP')
+        self.client.send(bytes(mess), "utf-8")
+        pass
 
     def close_gui(self):
         self.Gui__quit = True
@@ -167,7 +208,7 @@ class ChatRoomGui(Client):
             print(f"insert_text exception is {e}")
 
     def get_mess_from_server(self):
-        while True:
+        while False:
             self.receive_mess(self.Gui__quit)
             if self.rec_bool is True:
                 if self.debug_log:
@@ -187,3 +228,97 @@ if __name__ == "__main__":
     get_mess.start()
     gui.gui.mainloop()
     get_mess.join()
+
+global N
+N = 4
+
+
+def printSolution(board):
+    for i in range(N):
+        for j in range(N):
+            print
+            board[i][j],
+        print
+
+
+# A utility function to check if a queen can
+# be placed on board[row][col]. Note that this
+# function is called when "col" queens are
+# already placed in columns from 0 to col -1.
+# So we need to check only left side for
+# attacking queens
+def isSafe(board, row, col):
+    # Check this row on left side
+    for i in range(col):
+        if board[row][i] == 1:
+            return False
+
+    # Check upper diagonal on left side
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    # Check lower diagonal on left side
+    for i, j in zip(range(row, N, 1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    return True
+
+
+def solveNQUtil(board, col):
+    # base case: If all queens are placed
+    # then return true
+    if col >= N:
+        return True
+
+    # Consider this column and try placing
+    # this queen in all rows one by one
+    for i in range(N):
+
+        if isSafe(board, i, col):
+            # Place this queen in board[i][col]
+            board[i][col] = 1
+
+            # recur to place rest of the queens
+            if solveNQUtil(board, col + 1) == True:
+                return True
+
+            # If placing queen in board[i][col
+            # doesn't lead to a solution, then
+            # queen from board[i][col]
+            board[i][col] = 0
+
+    # if the queen can not be placed in any row in
+    # this colum col  then return false
+    return False
+
+
+# This function solves the N Queen problem using
+# Backtracking. It mainly uses solveNQUtil() to
+# solve the problem. It returns false if queens
+# cannot be placed, otherwise return true and
+# placement of queens in the form of 1s.
+# note that there may be more than one
+# solutions, this function prints one  of the
+# feasible solutions.
+def solveNQ():
+    board = [[0, 0, 0, 0],
+             [0, 0, 0, 0],
+             [0, 0, 0, 0],
+             [0, 0, 0, 0]
+             ]
+
+    if solveNQUtil(board, 0) == False:
+        print
+        "Solution does not exist"
+        return False
+
+    printSolution(board)
+    return True
+
+
+# driver program to test above function
+solveNQ()
+
+# This code is contributed by Divyanshu Mehta
