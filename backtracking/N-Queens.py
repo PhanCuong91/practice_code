@@ -163,6 +163,34 @@ class NQueens:
             c = 0
             self.solve_1(r, c)
 
+    def recursive_solution(self, r, c):
+        # base case
+        if self.pos == self.N:
+            return True
+            # if column is out of matrix, then increase row and reset column
+
+        # find queen in matrix
+        while c < self.N:
+            # if column is equal N, then increase row and reset column
+            if c == self.N:
+                r += 1
+                c = 0
+                # cannot find queen in matrix
+                if r == self.N:
+                    return False
+            # check current cell is valid position for queen or not
+            if self.is_valid_pos([r, c]):
+                # save position
+                self.pos.append([r, c])
+                # find next queen 's position
+                if self.recursive_solution(r, c+1):
+                    return True
+                # cannot find next queen position, then remove current position
+                self.pos.pop()
+            # increase column
+            c += 1
+        pass
+
     # copy from https://www.geeksforgeeks.org/python-program-for-n-queen-problem-backtracking-3/
     def solveNQUtil(self, col):
         # base case: If all queens are placed
@@ -180,7 +208,7 @@ class NQueens:
                 self.pos.append([i, col])
 
                 # recur to place rest of the queens
-                if self.solveNQUtil( col + 1) == True:
+                if self.solveNQUtil( col + 1):
                     return True
 
                 # If placing queen in board[i][col
@@ -194,14 +222,13 @@ class NQueens:
         return False
 
     def is_valid_pos(self, pos):
-        if pos[0] >= self.N and pos[1] >= self.N:
-            return "the position is not in matrix"
         if len(self.pos) == 0:
             return True
+        if pos[0] >= self.N and pos[1] >= self.N:
+            return "the position is not in matrix"
+
         else:
             for i in self.pos:
-                # if (pos[0] == 1 and pos[1] == 2) or (pos[0] == 2 and pos[1] == 3):
-                #     print(f"{abs(pos[0] - i[0])} == {abs(pos[1]-i[0])}")
                 if pos[0] == i[0] or pos[1] == i[1]:
                     return False
                 elif abs(pos[0] - i[0]) == abs(pos[1] - i[1]):
@@ -211,12 +238,14 @@ class NQueens:
 
 if __name__ == "__main__":
     queens = NQueens(4)
-    for n in range(4, 8):
+    for n in range(3, 8):
         queens = NQueens(n)
         queens.solve()
         print(queens.pos)
         queens.solve_1(0, 0)
         print(queens.pos)
         queens.solveNQUtil(0)
+        print(queens.pos)
+        queens.recursive_solution(0, 0)
         print(queens.pos)
 

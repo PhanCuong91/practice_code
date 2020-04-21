@@ -122,11 +122,44 @@ class SudokuSolution:
                 c = 0
         return True
 
+    def recursive_solution(self, r, c):
+        # find empty cell
+        while True:
+            # increase row once column reached it's limitation
+            if c == 9:
+                r += 1
+                c = 0
+            # base case all empty cells were filled
+            if r == 9 and c == 0:
+                return True
+            # reach empty cell, then stop find
+            if self.sudoku[r][c] == 0:
+                break
+            # continue searching
+            else:
+                c += 1
+        # set value to incorrect value plus one
+        value = self.sudoku[r][c] + 1
+        # search valid value
+        while value < 10:
+            if self.is_cell_valid(r, c, value):
+                # save value to backtracking
+                self.sudoku[r][c] = value
+                # print(f"row {r} and column {c} value {value}")
+                # search value for next cell, if it is empty
+                if self.recursive_solution(r, c+1):
+                    # got base case
+                    return True
+                #  next cell cannot get valid value, then set current cell to empty (0)
+                self.sudoku[r][c] = 0
+            value += 1
+        return False
+
 
 if __name__ == "__main__":
-    su = SudokuSolution(sudoku_2)
+    su = SudokuSolution(sudoku_1)
     su.constant_cell()
-    print(su.solution())
+    print(su.recursive_solution(0, 0))
     print("solution result")
     for i in su.sudoku:
         print(i)
